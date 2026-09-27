@@ -1,0 +1,1059 @@
+{
+  "name": "AI Email Triage & RAG Assistant",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -816,
+        352
+      ],
+      "id": "798b3154-512a-41c6-9368-44bdc8e3a46c",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/api/v1/rag/query",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"question\": \"{{ $json.output.rag_query }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1472,
+        -608
+      ],
+      "id": "a436bfd9-9898-4028-9a8a-267c22767719",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "54b600c2-9273-4d9f-98a6-874e8b074057",
+              "name": "message_id",
+              "value": "TEST-001",
+              "type": "string"
+            },
+            {
+              "id": "798120af-5ff3-4f8a-81d2-0d4b732d5f61",
+              "name": "thread_id",
+              "value": "THREAD-001",
+              "type": "string"
+            },
+            {
+              "id": "e489fd38-12fb-4b51-99d7-74be743fd715",
+              "name": "sender",
+              "value": "saleem290803@gmail.com",
+              "type": "string"
+            },
+            {
+              "id": "c097a7e2-3853-4aa7-8a18-5830c5e58103",
+              "name": "Subject",
+              "value": "Premium Relocation Support",
+              "type": "string"
+            },
+            {
+              "id": "fbbe424b-7057-4b6b-bb28-a0346f3e08b3",
+              "name": "body",
+              "value": "How much does Premium Relocation Support cost and what does it include?",
+              "type": "string"
+            },
+            {
+              "id": "14402286-40aa-45c6-8f4d-f1b59d3e28c0",
+              "name": "timestamp",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "4c18eb69-093d-4801-a22c-a4d9bae255d4",
+              "name": "attachments",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -608,
+        352
+      ],
+      "id": "54fda5eb-abeb-429f-810e-9f736eeaaaba",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI email triage classifier for NorthBridge Living.\n\nAnalyze the incoming email.\n\nSender:\n{{ $json.sender }}\n\nSubject:\n{{ $json.Subject }}\n\nBody:\n{{ $json.body }}\n\nClassify it into exactly one category:\n\ngeneral_query\nsales_inquiry\njob_application\nproject_related\ninternal_communication\nmeeting_request\nurgent_request\ncomplaint\npromotional\nspam\nother\n\nPriority must be exactly one of:\n\nlow\nnormal\nhigh\ncritical\n\nUse these routing rules:\n\ngeneral_query -> rag_query\nsales_inquiry -> rag_query\njob_application -> forward_hr\nproject_related -> forward_manager\ninternal_communication -> forward_manager\ncomplaint -> forward_manager\nmeeting_request -> human_review\nurgent_request -> urgent_escalation\npromotional -> archive\nspam -> mark_spam\nother -> human_review\n\nHuman review is required for:\n- job applications\n- project/business decisions\n- complaints\n- meeting decisions\n- urgent situations\n- low-confidence classifications\n\nFor general_query and sales_inquiry only, create a clear standalone\nknowledge-base question in rag_query.\n\nFor every other category, rag_query must be null.\n\nBe conservative with spam and promotional classifications.\nNever make hiring or business decisions.\n\nReturn structured JSON only with exactly:\n\n{\n  \"category\": \"...\",\n  \"priority\": \"...\",\n  \"confidence\": 0.0,\n  \"requires_human\": false,\n  \"action\": \"...\",\n  \"reason\": \"...\",\n  \"rag_query\": \"...\"\n}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -208,
+        32
+      ],
+      "id": "3d89107a-2c70-45d2-975e-8deb9ebf1cec",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -208,
+        208
+      ],
+      "id": "1d01daf7-0abf-4bb2-a0c6-c5a74fe155fd",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Wrep3h0Zv1LotYES",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"category\": \"general_query\",\n  \"priority\": \"normal\",\n  \"confidence\": 0.95,\n  \"requires_human\": false,\n  \"action\": \"rag_query\",\n  \"reason\": \"Customer is asking about an existing NorthBridge service.\",\n  \"rag_query\": \"How much does Premium Relocation Support cost and what does it include?\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -64,
+        208
+      ],
+      "id": "511e8fc0-6551-450d-81e2-d79d7393b057",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.output.action}}",
+                    "rightValue": "rag_query",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "c54feb25-55d4-4ece-ad27-8ed333fdc086"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "5f35748d-2299-4718-b70b-e65011a6cff3",
+                    "leftValue": "={{$json.output.action}}",
+                    "rightValue": "forward_hr",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "1c204512-97cd-49ac-99a4-d4e90670ea16",
+                    "leftValue": "={{$json.output.action}}",
+                    "rightValue": "forward_manager",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "2df03b74-5998-47f3-b205-9c4f85667f13",
+                    "leftValue": "={{$json.output.action}}",
+                    "rightValue": "human_review",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "3b87a220-06dd-4fb0-8f76-6df245e3d16c",
+                    "leftValue": "={{$json.output.action}}",
+                    "rightValue": "urgent_escalation",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ef5544dc-c369-40bd-b7aa-c22df4f9acc1",
+                    "leftValue": "={{$json.output.action}}",
+                    "rightValue": "archive",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "4d1f3979-d44c-4df2-a5cf-7d091edc6639",
+                    "leftValue": "={{$json.output.action}}",
+                    "rightValue": "mark_spam",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        816,
+        -80
+      ],
+      "id": "9fa789ca-6644-412d-85c2-5a00ff7e7e84",
+      "name": "Route Email"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f0d4ef1e-1f71-40b6-8b5d-6e0ad31e5d5e",
+              "leftValue": "={{ $json.grounded }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1680,
+        -608
+      ],
+      "id": "2dfcf4a0-da58-4313-8a2d-e5bf5f00f4c0",
+      "name": "RAG Grounded?"
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Normalize Email').item.json.message_id }}",
+        "emailType": "text",
+        "message": "=Hello,\n\n{{ $json.answer }}\n\nKind regards,\nNorthBridge Living",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1952,
+        -688
+      ],
+      "id": "8b00fa6c-423c-4c48-9fc8-3c2409ef3378",
+      "name": "Reply - RAG Answer",
+      "webhookId": "0918b562-4e25-452a-93fe-1128867d318f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rndEKXBccd9DMp8G",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Normalize Email').item.json.message_id }}",
+        "emailType": "text",
+        "message": "=Hello,\n\nThanks for reaching out! While I couldn't find the exact details in my current knowledge base, I want to make sure you get the right answer.\n\nI've routed your request directly to our team, and someone will follow up with you shortly.\n\nKind regards,\nNorthBridge Living",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1952,
+        -528
+      ],
+      "id": "b49cdd00-b802-4dec-b59f-ee32491fccfd",
+      "name": "Reply - RAG Answer 2",
+      "webhookId": "0918b562-4e25-452a-93fe-1128867d318f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rndEKXBccd9DMp8G",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "unofficial.ms1@gmail.com",
+        "subject": "=Fwd: {{ $('Edit Fields').item.json.Subject }}",
+        "emailType": "text",
+        "message": "=New job application received.\n\nOriginal sender:\n{{ $('Edit Fields').item.json.sender }}\n\nSubject:\n{{ $('Edit Fields').item.json.Subject }}\n\nMessage:\n{{ $('Edit Fields').item.json.body }}\n\nClassification:\nJob Application\n\nPriority:\n{{ $('Basic LLM Chain').item.json.output.priority }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1472,
+        -400
+      ],
+      "id": "45d7e9f8-a5bd-46e7-b68c-85b68ecbc450",
+      "name": "Forward HR",
+      "webhookId": "9547d189-6f69-41a6-ab75-2bf56ed24716",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rndEKXBccd9DMp8G",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "unofficial.ms1@gmail.com",
+        "subject": "=Fwd: {{ $('Edit Fields').item.json.Subject }}",
+        "emailType": "text",
+        "message": "=Manager review required.\n\nOriginal sender:\n{{ $('Edit Fields').item.json.sender }}\n\nSubject:\n{{ $('Edit Fields').item.json.Subject }}\n\nMessage:\n{{ $('Edit Fields').item.json.body }}\n\nCategory:\n{{ $('Basic LLM Chain').item.json.output.category }}\n\nPriority:\n{{ $('Basic LLM Chain').item.json.output.priority }}\n\nAI reason:\n{{ $('Basic LLM Chain').item.json.output.reason }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1472,
+        -192
+      ],
+      "id": "3c98ff48-62e2-4ee4-8019-48fe1cb63cd6",
+      "name": "Forward Manager",
+      "webhookId": "9547d189-6f69-41a6-ab75-2bf56ed24716",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rndEKXBccd9DMp8G",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "=Manager review required.\n\nOriginal sender:\n{{ $('Edit Fields').item.json.sender }}\n\nSubject:\n{{ $('Edit Fields').item.json.Subject }}\n\nMessage:\n{{ $('Edit Fields').item.json.body }}\n\nCategory:\n{{ $('Basic LLM Chain').item.json.output.category }}\n\nPriority:\n{{ $('Basic LLM Chain').item.json.output.priority }}\n\nAI reason:\n{{ $('Basic LLM Chain').item.json.output.reason }}",
+        "options": {},
+        "embeds": {
+          "values": []
+        }
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        -192
+      ],
+      "id": "582f2c5a-8073-4d43-939a-607278de8b86",
+      "name": "Discord - Manager Alert",
+      "webhookId": "6710c8cd-9dd5-4344-877f-d69126588bf3",
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "wtpoLuFvSuDxoUxt",
+          "name": "Discord - Manager Alert"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "=🔔 NEW JOB APPLICATION\n\nFrom: {{ $('Edit Fields').item.json.sender }}\nSubject: {{ $('Edit Fields').item.json.Subject }}\nPriority: {{ $('Basic LLM Chain').item.json.output.priority }}\n\nApplication forwarded to HR.",
+        "options": {},
+        "embeds": {
+          "values": []
+        }
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        -400
+      ],
+      "id": "dd926fda-b699-459f-8fdf-5f0c3748a28f",
+      "name": "Discord - HR Alert",
+      "webhookId": "6710c8cd-9dd5-4344-877f-d69126588bf3",
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "F29yUJ5dqrPzNWE3",
+          "name": "Discord - HR Alert"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "=👤 HUMAN REVIEW REQUIRED\n\nFrom: {{ $('Edit Fields').item.json.sender }}\nSubject: {{ $('Edit Fields').item.json.Subject }}\n\nCategory:\n{{ $('Basic LLM Chain').item.json.output.category }}\n\nReason:\n{{ $('Basic LLM Chain').item.json.output.reason }}\n\nPlease review manually.",
+        "options": {},
+        "embeds": {
+          "values": []
+        }
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        -16
+      ],
+      "id": "267f00c9-7723-479b-b98d-243bfb0fc39d",
+      "name": "Discord - Manager Alert1",
+      "webhookId": "6710c8cd-9dd5-4344-877f-d69126588bf3",
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "wtpoLuFvSuDxoUxt",
+          "name": "Discord - Manager Alert"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "=🚨 URGENT EMAIL — IMMEDIATE ATTENTION REQUIRED\n\nFrom:\n{{ $('Edit Fields').item.json.sender }}\n\nSubject:\n{{ $('Edit Fields').item.json.Subject }}\n\nMessage:\n{{ $('Edit Fields').item.json.body }}\n\nPriority:\n{{ $('Basic LLM Chain').item.json.output.priority }}\n\nReason:\n{{ $('Basic LLM Chain').item.json.output.reason }}",
+        "options": {},
+        "embeds": {
+          "values": []
+        }
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        160
+      ],
+      "id": "712d73dc-0e0f-4b4d-bdd0-bfaccb5922be",
+      "name": "Discord - Urgent Alert",
+      "webhookId": "6710c8cd-9dd5-4344-877f-d69126588bf3",
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "tZ8YB5EZcyrrsZ9r",
+          "name": "Discord -  Urgent Alert"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "unofficial.ms1@gmail.com",
+        "subject": "=Fwd: {{ $('Edit Fields').item.json.Subject }}",
+        "emailType": "text",
+        "message": "=🚨 URGENT EMAIL — IMMEDIATE ATTENTION REQUIRED\n\nFrom:\n{{ $('Edit Fields').item.json.sender }}\n\nSubject:\n{{ $('Edit Fields').item.json.Subject }}\n\nMessage:\n{{ $('Edit Fields').item.json.body }}\n\nPriority:\n{{ $('Basic LLM Chain').item.json.output.priority }}\n\nReason:\n{{ $('Basic LLM Chain').item.json.output.reason }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1680,
+        160
+      ],
+      "id": "7a72f4d2-f54f-4629-8109-f398f314c9b0",
+      "name": "Urgent Alert - Manager",
+      "webhookId": "bcfc7526-5260-44b3-8ad2-b4d15c93bc40",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rndEKXBccd9DMp8G",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "removeLabels",
+        "messageId": "={{ $('Normalize Email').item.json.message_id }}",
+        "labelIds": [
+          "INBOX"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1488,
+        336
+      ],
+      "id": "3cbfa0de-0ae6-47d5-ad27-2058b24f541f",
+      "name": "Archive Email",
+      "webhookId": "9d150ddd-6105-4f62-929b-287b77e77eaa",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rndEKXBccd9DMp8G",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $('Normalize Email').item.json.message_id }}",
+        "labelIds": [
+          "SPAM"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1488,
+        528
+      ],
+      "id": "a60341fb-728b-4554-aaca-c8f61b54610d",
+      "name": "Mark as Spam",
+      "webhookId": "9d150ddd-6105-4f62-929b-287b77e77eaa",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rndEKXBccd9DMp8G",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {
+          "dataPropertyAttachmentsPrefixName": "Email",
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -848,
+        32
+      ],
+      "id": "0bc4e1f4-6146-4952-b45c-074192c8d355",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rndEKXBccd9DMp8G",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "54b600c2-9273-4d9f-98a6-874e8b074057",
+              "name": "message_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "798120af-5ff3-4f8a-81d2-0d4b732d5f61",
+              "name": "thread_id",
+              "value": "={{ $json.threadId }}",
+              "type": "string"
+            },
+            {
+              "id": "e489fd38-12fb-4b51-99d7-74be743fd715",
+              "name": "sender",
+              "value": "={{ $json.from.value[0].address }} - {{ $json.from.value[0].name }}",
+              "type": "string"
+            },
+            {
+              "id": "c097a7e2-3853-4aa7-8a18-5830c5e58103",
+              "name": "Subject",
+              "value": "={{ $json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "fbbe424b-7057-4b6b-bb28-a0346f3e08b3",
+              "name": "body",
+              "value": "={{ $json.text || $json.html || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "14402286-40aa-45c6-8f4d-f1b59d3e28c0",
+              "name": "timestamp",
+              "value": "={{ $json.date }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -592,
+        32
+      ],
+      "id": "93a9cb42-e5c6-4031-80a9-8125e08148b3",
+      "name": "Normalize Email"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\n\nlet body = item.body || '';\n\n// Remove URLs written as [https://...]\nbody = body.replace(/\\[https?:\\/\\/[^\\]]+\\]/g, ' ');\n\n// Remove normal URLs\nbody = body.replace(/https?:\\/\\/\\S+/g, ' ');\n\n// Remove quoted email lines\nbody = body.replace(/^\\s*>.*$/gm, '');\n\n// Remove previous quoted reply when possible\nconst replyIndex = body.search(/\\nOn .+wrote:\\s*/i);\n\nif (replyIndex !== -1) {\n  body = body.slice(0, replyIndex);\n}\n\n// Clean whitespace\nbody = body\n  .replace(/[ \\t]+/g, ' ')\n  .replace(/\\n{3,}/g, '\\n\\n')\n  .trim();\n\nreturn [\n  {\n    json: {\n      ...item,\n      body\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        32
+      ],
+      "id": "8fa40059-2210-472f-ae55-95babc710657",
+      "name": "Clean Email Body"
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "=👤 HUMAN REVIEW REQUIRED\n\nFrom: {{ $('Edit Fields').item.json.sender }}\nSubject: {{ $('Edit Fields').item.json.Subject }}\n\nCategory:\n{{ $('Basic LLM Chain').item.json.output.category }}\n\nReason:\n{{ $('Basic LLM Chain').item.json.output.reason }}\n\nPlease review manually.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        2160,
+        -528
+      ],
+      "id": "e4d2b9aa-e184-4994-a51f-309a95a0ae0c",
+      "name": "Discord - Human Review",
+      "webhookId": "72f63bb4-ad70-4828-b864-f85515e4679c",
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "wtpoLuFvSuDxoUxt",
+          "name": "Discord - Manager Alert"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c7404303-f1c0-4d20-8960-641e0fa9ac4f",
+              "leftValue": "={{ $json.output.confidence }}",
+              "rightValue": 0.75,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        256,
+        16
+      ],
+      "id": "91e5ae20-92ce-430f-b7e4-cbca67205da0",
+      "name": "Confidence OK?"
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "=👤 HUMAN REVIEW REQUIRED\n\nFrom: {{ $('Edit Fields').item.json.sender }}\nSubject: {{ $('Edit Fields').item.json.Subject }}\n\nCategory:\n{{ $('Basic LLM Chain').item.json.output.category }}\n\nReason:\n{{ $('Basic LLM Chain').item.json.output.reason }}\n\nPlease review manually.",
+        "options": {},
+        "embeds": {
+          "values": []
+        }
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        496,
+        128
+      ],
+      "id": "a9219b97-ac20-450f-8285-40e33ee22764",
+      "name": "Discord - Manager Alert2",
+      "webhookId": "6710c8cd-9dd5-4344-877f-d69126588bf3",
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "wtpoLuFvSuDxoUxt",
+          "name": "Discord - Manager Alert"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Confidence OK?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Email": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Forward HR",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Forward Manager",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Discord - Manager Alert1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Discord - Urgent Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Archive Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark as Spam",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "RAG Grounded?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG Grounded?": {
+      "main": [
+        [
+          {
+            "node": "Reply - RAG Answer",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reply - RAG Answer 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Forward HR": {
+      "main": [
+        [
+          {
+            "node": "Discord - HR Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Forward Manager": {
+      "main": [
+        [
+          {
+            "node": "Discord - Manager Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discord - Urgent Alert": {
+      "main": [
+        [
+          {
+            "node": "Urgent Alert - Manager",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Normalize Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Email": {
+      "main": [
+        [
+          {
+            "node": "Clean Email Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Email Body": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply - RAG Answer 2": {
+      "main": [
+        [
+          {
+            "node": "Discord - Human Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confidence OK?": {
+      "main": [
+        [
+          {
+            "node": "Route Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Discord - Manager Alert2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "62b5577d-2bfa-4d49-b4db-607db49e9283",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "efc765f336945861d7ca4d91ae24045e93efb6674bd411177e42169d2b09d2ea"
+  },
+  "nodeGroups": [],
+  "id": "FvQ01ba1pYdZOa4B",
+  "tags": []
+}

@@ -1,1 +1,1 @@
-### AI Email Triage & RAG Assistant ###
+### AI Email Triage & RAG Assistant

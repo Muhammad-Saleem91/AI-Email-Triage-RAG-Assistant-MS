@@ -1,0 +1,68 @@
+# ==============================
+# Secrets / environment
+# ==============================
+.env
+**/.env
+
+# Keep examples
+!.env.example
+!**/.env.example
+
+
+# ==============================
+# Python
+# ==============================
+.venv/
+**/.venv/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+
+
+# ==============================
+# Runtime database
+# ==============================
+*.db
+*.sqlite
+*.sqlite3
+
+
+# ==============================
+# Vector database runtime files
+# ==============================
+qdrant_data/
+**/qdrant_data/
+
+
+# ==============================
+# Runtime uploads
+# ==============================
+uploads/
+**/uploads/
+
+
+# ==============================
+# Node / Vite
+# ==============================
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+
+
+# ==============================
+# Logs / cache
+# ==============================
+*.log
+.cache/
+.pytest_cache/
+
+
+# ==============================
+# IDE / OS
+# ==============================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
