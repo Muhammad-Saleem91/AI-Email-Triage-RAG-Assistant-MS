@@ -24,7 +24,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        1472,
+        1680,
         -608
       ],
       "id": "a436bfd9-9898-4028-9a8a-267c22767719",
@@ -102,11 +102,13 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        -208,
+        0,
         32
       ],
       "id": "3d89107a-2c70-45d2-975e-8deb9ebf1cec",
-      "name": "Basic LLM Chain"
+      "name": "Basic LLM Chain",
+      "retryOnFail": true,
+      "maxTries": 3
     },
     {
       "parameters": {
@@ -115,7 +117,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.1,
       "position": [
-        -208,
+        0,
         208
       ],
       "id": "1d01daf7-0abf-4bb2-a0c6-c5a74fe155fd",
@@ -134,7 +136,7 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        -64,
+        144,
         208
       ],
       "id": "511e8fc0-6551-450d-81e2-d79d7393b057",
@@ -311,7 +313,7 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        816,
+        1024,
         -80
       ],
       "id": "9fa789ca-6644-412d-85c2-5a00ff7e7e84",
@@ -345,7 +347,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        1680,
+        1888,
         -608
       ],
       "id": "2dfcf4a0-da58-4313-8a2d-e5bf5f00f4c0",
@@ -364,7 +366,7 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        1952,
+        2160,
         -688
       ],
       "id": "8b00fa6c-423c-4c48-9fc8-3c2409ef3378",
@@ -390,7 +392,7 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        1952,
+        2160,
         -528
       ],
       "id": "b49cdd00-b802-4dec-b59f-ee32491fccfd",
@@ -406,18 +408,25 @@
     {
       "parameters": {
         "sendTo": "unofficial.ms1@gmail.com",
-        "subject": "=Fwd: {{ $('Edit Fields').item.json.Subject }}",
+        "subject": "=Fwd: {{ $('Normalize Email').item.json.Subject }}",
         "emailType": "text",
-        "message": "=New job application received.\n\nOriginal sender:\n{{ $('Edit Fields').item.json.sender }}\n\nSubject:\n{{ $('Edit Fields').item.json.Subject }}\n\nMessage:\n{{ $('Edit Fields').item.json.body }}\n\nClassification:\nJob Application\n\nPriority:\n{{ $('Basic LLM Chain').item.json.output.priority }}",
+        "message": "=New job application received.\n\nOriginal sender:\n{{ $('Normalize Email').item.json.sender }}\n\nSubject:\n{{ $('Normalize Email').item.json.Subject }}\n\nMessage:\n{{ $('Normalize Email').item.json.body }}\n\nClassification:\nJob Application\n\nPriority:\n{{ $('Basic LLM Chain').item.json.output.priority }}",
         "options": {
-          "appendAttribution": false
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "={{ Object.keys($binary || {}).join(',') }}"
+              }
+            ]
+          }
         }
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        1472,
-        -400
+        1824,
+        -384
       ],
       "id": "45d7e9f8-a5bd-46e7-b68c-85b68ecbc450",
       "name": "Forward HR",
@@ -432,9 +441,9 @@
     {
       "parameters": {
         "sendTo": "unofficial.ms1@gmail.com",
-        "subject": "=Fwd: {{ $('Edit Fields').item.json.Subject }}",
+        "subject": "=Fwd: {{ $('Normalize Email').item.json.Subject }}",
         "emailType": "text",
-        "message": "=Manager review required.\n\nOriginal sender:\n{{ $('Edit Fields').item.json.sender }}\n\nSubject:\n{{ $('Edit Fields').item.json.Subject }}\n\nMessage:\n{{ $('Edit Fields').item.json.body }}\n\nCategory:\n{{ $('Basic LLM Chain').item.json.output.category }}\n\nPriority:\n{{ $('Basic LLM Chain').item.json.output.priority }}\n\nAI reason:\n{{ $('Basic LLM Chain').item.json.output.reason }}",
+        "message": "=Manager review required.\n\nOriginal sender:\n{{ $('Normalize Email').item.json.sender }}\n\nSubject:\n{{ $('Normalize Email').item.json.Subject }}\n\nMessage:\n{{ $('Normalize Email').item.json.body }}\n\nCategory:\n{{ $('Basic LLM Chain').item.json.output.category }}\n\nPriority:\n{{ $('Basic LLM Chain').item.json.output.priority }}\n\nAI reason:\n{{ $('Basic LLM Chain').item.json.output.reason }}",
         "options": {
           "appendAttribution": false
         }
@@ -442,7 +451,7 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        1472,
+        1680,
         -192
       ],
       "id": "3c98ff48-62e2-4ee4-8019-48fe1cb63cd6",
@@ -458,7 +467,7 @@
     {
       "parameters": {
         "authentication": "webhook",
-        "content": "=Manager review required.\n\nOriginal sender:\n{{ $('Edit Fields').item.json.sender }}\n\nSubject:\n{{ $('Edit Fields').item.json.Subject }}\n\nMessage:\n{{ $('Edit Fields').item.json.body }}\n\nCategory:\n{{ $('Basic LLM Chain').item.json.output.category }}\n\nPriority:\n{{ $('Basic LLM Chain').item.json.output.priority }}\n\nAI reason:\n{{ $('Basic LLM Chain').item.json.output.reason }}",
+        "content": "=Manager review required.\n\nOriginal sender:\n{{ $('Normalize Email').item.json.sender }}\n\nSubject:\n{{ $('Normalize Email').item.json.Subject }}\n\nMessage:\n{{ $('Normalize Email').item.json.body }}\n\nCategory:\n{{ $('Basic LLM Chain').item.json.output.category }}\n\nPriority:\n{{ $('Basic LLM Chain').item.json.output.priority }}\n\nAI reason:\n{{ $('Basic LLM Chain').item.json.output.reason }}",
         "options": {},
         "embeds": {
           "values": []
@@ -467,7 +476,7 @@
       "type": "n8n-nodes-base.discord",
       "typeVersion": 2,
       "position": [
-        1680,
+        1888,
         -192
       ],
       "id": "582f2c5a-8073-4d43-939a-607278de8b86",
@@ -483,7 +492,7 @@
     {
       "parameters": {
         "authentication": "webhook",
-        "content": "=🔔 NEW JOB APPLICATION\n\nFrom: {{ $('Edit Fields').item.json.sender }}\nSubject: {{ $('Edit Fields').item.json.Subject }}\nPriority: {{ $('Basic LLM Chain').item.json.output.priority }}\n\nApplication forwarded to HR.",
+        "content": "=🔔 NEW JOB APPLICATION\n\nFrom: {{ $('Normalize Email').item.json.sender }}\nSubject: {{ $('Normalize Email').item.json.Subject }}\nPriority: {{ $('Basic LLM Chain').item.json.output.priority }}\n\nApplication forwarded to HR.",
         "options": {},
         "embeds": {
           "values": []
@@ -492,8 +501,8 @@
       "type": "n8n-nodes-base.discord",
       "typeVersion": 2,
       "position": [
-        1680,
-        -400
+        2032,
+        -384
       ],
       "id": "dd926fda-b699-459f-8fdf-5f0c3748a28f",
       "name": "Discord - HR Alert",
@@ -508,7 +517,7 @@
     {
       "parameters": {
         "authentication": "webhook",
-        "content": "=👤 HUMAN REVIEW REQUIRED\n\nFrom: {{ $('Edit Fields').item.json.sender }}\nSubject: {{ $('Edit Fields').item.json.Subject }}\n\nCategory:\n{{ $('Basic LLM Chain').item.json.output.category }}\n\nReason:\n{{ $('Basic LLM Chain').item.json.output.reason }}\n\nPlease review manually.",
+        "content": "=👤 HUMAN REVIEW REQUIRED\n\nFrom: {{ $('Normalize Email').item.json.sender }}\nSubject: {{ $('Normalize Email').item.json.Subject }}\n\nCategory:\n{{ $('Basic LLM Chain').item.json.output.category }}\n\nReason:\n{{ $('Basic LLM Chain').item.json.output.reason }}\n\nPlease review manually.",
         "options": {},
         "embeds": {
           "values": []
@@ -517,7 +526,7 @@
       "type": "n8n-nodes-base.discord",
       "typeVersion": 2,
       "position": [
-        1472,
+        1680,
         -16
       ],
       "id": "267f00c9-7723-479b-b98d-243bfb0fc39d",
@@ -533,7 +542,7 @@
     {
       "parameters": {
         "authentication": "webhook",
-        "content": "=🚨 URGENT EMAIL — IMMEDIATE ATTENTION REQUIRED\n\nFrom:\n{{ $('Edit Fields').item.json.sender }}\n\nSubject:\n{{ $('Edit Fields').item.json.Subject }}\n\nMessage:\n{{ $('Edit Fields').item.json.body }}\n\nPriority:\n{{ $('Basic LLM Chain').item.json.output.priority }}\n\nReason:\n{{ $('Basic LLM Chain').item.json.output.reason }}",
+        "content": "=🚨 URGENT EMAIL — IMMEDIATE ATTENTION REQUIRED\n\nFrom:\n{{ $('Normalize Email').item.json.sender }}\n\nSubject:\n{{ $('Normalize Email').item.json.Subject }}\n\nMessage:\n{{ $('Normalize Email').item.json.body }}\n\nPriority:\n{{ $('Basic LLM Chain').item.json.output.priority }}\n\nReason:\n{{ $('Basic LLM Chain').item.json.output.reason }}",
         "options": {},
         "embeds": {
           "values": []
@@ -542,7 +551,7 @@
       "type": "n8n-nodes-base.discord",
       "typeVersion": 2,
       "position": [
-        1472,
+        1680,
         160
       ],
       "id": "712d73dc-0e0f-4b4d-bdd0-bfaccb5922be",
@@ -558,9 +567,9 @@
     {
       "parameters": {
         "sendTo": "unofficial.ms1@gmail.com",
-        "subject": "=Fwd: {{ $('Edit Fields').item.json.Subject }}",
+        "subject": "=Fwd: {{ $('Normalize Email').item.json.Subject }}",
         "emailType": "text",
-        "message": "=🚨 URGENT EMAIL — IMMEDIATE ATTENTION REQUIRED\n\nFrom:\n{{ $('Edit Fields').item.json.sender }}\n\nSubject:\n{{ $('Edit Fields').item.json.Subject }}\n\nMessage:\n{{ $('Edit Fields').item.json.body }}\n\nPriority:\n{{ $('Basic LLM Chain').item.json.output.priority }}\n\nReason:\n{{ $('Basic LLM Chain').item.json.output.reason }}",
+        "message": "=🚨 URGENT EMAIL — IMMEDIATE ATTENTION REQUIRED\n\nFrom:\n{{ $('Normalize Email').item.json.sender }}\n\nSubject:\n{{ $('Normalize Email').item.json.Subject }}\n\nMessage:\n{{ $('Normalize Email').item.json.body }}\n\nPriority:\n{{ $('Basic LLM Chain').item.json.output.priority }}\n\nReason:\n{{ $('Basic LLM Chain').item.json.output.reason }}",
         "options": {
           "appendAttribution": false
         }
@@ -568,7 +577,7 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        1680,
+        1888,
         160
       ],
       "id": "7a72f4d2-f54f-4629-8109-f398f314c9b0",
@@ -592,7 +601,7 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        1488,
+        1696,
         336
       ],
       "id": "3cbfa0de-0ae6-47d5-ad27-2058b24f541f",
@@ -616,7 +625,7 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        1488,
+        1696,
         528
       ],
       "id": "a60341fb-728b-4554-aaca-c8f61b54610d",
@@ -639,17 +648,17 @@
           ]
         },
         "simple": false,
+        "maxResults": 1,
         "filters": {},
         "options": {
-          "dataPropertyAttachmentsPrefixName": "Email",
           "downloadAttachments": true
         }
       },
       "type": "n8n-nodes-base.gmailTrigger",
       "typeVersion": 1.4,
       "position": [
-        -848,
-        32
+        -1408,
+        16
       ],
       "id": "0bc4e1f4-6146-4952-b45c-074192c8d355",
       "name": "Gmail Trigger",
@@ -662,65 +671,12 @@
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "54b600c2-9273-4d9f-98a6-874e8b074057",
-              "name": "message_id",
-              "value": "={{ $json.id }}",
-              "type": "string"
-            },
-            {
-              "id": "798120af-5ff3-4f8a-81d2-0d4b732d5f61",
-              "name": "thread_id",
-              "value": "={{ $json.threadId }}",
-              "type": "string"
-            },
-            {
-              "id": "e489fd38-12fb-4b51-99d7-74be743fd715",
-              "name": "sender",
-              "value": "={{ $json.from.value[0].address }} - {{ $json.from.value[0].name }}",
-              "type": "string"
-            },
-            {
-              "id": "c097a7e2-3853-4aa7-8a18-5830c5e58103",
-              "name": "Subject",
-              "value": "={{ $json.subject }}",
-              "type": "string"
-            },
-            {
-              "id": "fbbe424b-7057-4b6b-bb28-a0346f3e08b3",
-              "name": "body",
-              "value": "={{ $json.text || $json.html || '' }}",
-              "type": "string"
-            },
-            {
-              "id": "14402286-40aa-45c6-8f4d-f1b59d3e28c0",
-              "name": "timestamp",
-              "value": "={{ $json.date }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        -592,
-        32
-      ],
-      "id": "93a9cb42-e5c6-4031-80a9-8125e08148b3",
-      "name": "Normalize Email"
-    },
-    {
-      "parameters": {
-        "jsCode": "const item = $input.first().json;\n\nlet body = item.body || '';\n\n// Remove URLs written as [https://...]\nbody = body.replace(/\\[https?:\\/\\/[^\\]]+\\]/g, ' ');\n\n// Remove normal URLs\nbody = body.replace(/https?:\\/\\/\\S+/g, ' ');\n\n// Remove quoted email lines\nbody = body.replace(/^\\s*>.*$/gm, '');\n\n// Remove previous quoted reply when possible\nconst replyIndex = body.search(/\\nOn .+wrote:\\s*/i);\n\nif (replyIndex !== -1) {\n  body = body.slice(0, replyIndex);\n}\n\n// Clean whitespace\nbody = body\n  .replace(/[ \\t]+/g, ' ')\n  .replace(/\\n{3,}/g, '\\n\\n')\n  .trim();\n\nreturn [\n  {\n    json: {\n      ...item,\n      body\n    }\n  }\n];"
+        "jsCode": "const input = $input.first();\n\nconst item = input.json;\n\nlet body = item.body || '';\n\nbody = body.replace(/\\[https?:\\/\\/[^\\]]+\\]/g, ' ');\nbody = body.replace(/https?:\\/\\/\\S+/g, ' ');\nbody = body.replace(/^\\s*>.*$/gm, '');\n\nconst replyIndex = body.search(/\\nOn .+wrote:\\s*/i);\n\nif (replyIndex !== -1) {\n  body = body.slice(0, replyIndex);\n}\n\nbody = body\n  .replace(/[ \\t]+/g, ' ')\n  .replace(/\\n{3,}/g, '\\n\\n')\n  .trim();\n\nreturn [\n  {\n    json: {\n      ...item,\n      body\n    },\n\n    // keep attachments alive\n    binary: input.binary || {}\n  }\n];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -384,
+        -256,
         32
       ],
       "id": "8fa40059-2210-472f-ae55-95babc710657",
@@ -729,13 +685,13 @@
     {
       "parameters": {
         "authentication": "webhook",
-        "content": "=👤 HUMAN REVIEW REQUIRED\n\nFrom: {{ $('Edit Fields').item.json.sender }}\nSubject: {{ $('Edit Fields').item.json.Subject }}\n\nCategory:\n{{ $('Basic LLM Chain').item.json.output.category }}\n\nReason:\n{{ $('Basic LLM Chain').item.json.output.reason }}\n\nPlease review manually.",
+        "content": "=👤 HUMAN REVIEW REQUIRED\n\nFrom: {{ $('Normalize Email').item.json.sender }}\nSubject: {{ $('Normalize Email').item.json.Subject }}\n\nCategory:\n{{ $('Basic LLM Chain').item.json.output.category }}\n\nReason:\n{{ $('Basic LLM Chain').item.json.output.reason }}\n\nPlease review manually.",
         "options": {}
       },
       "type": "n8n-nodes-base.discord",
       "typeVersion": 2,
       "position": [
-        2160,
+        2368,
         -528
       ],
       "id": "e4d2b9aa-e184-4994-a51f-309a95a0ae0c",
@@ -775,7 +731,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        256,
+        464,
         16
       ],
       "id": "91e5ae20-92ce-430f-b7e4-cbca67205da0",
@@ -784,7 +740,7 @@
     {
       "parameters": {
         "authentication": "webhook",
-        "content": "=👤 HUMAN REVIEW REQUIRED\n\nFrom: {{ $('Edit Fields').item.json.sender }}\nSubject: {{ $('Edit Fields').item.json.Subject }}\n\nCategory:\n{{ $('Basic LLM Chain').item.json.output.category }}\n\nReason:\n{{ $('Basic LLM Chain').item.json.output.reason }}\n\nPlease review manually.",
+        "content": "=👤 HUMAN REVIEW REQUIRED\n\nFrom: {{ $('Normalize Email').item.json.sender }}\nSubject: {{ $('Normalize Email').item.json.Subject }}\n\nCategory:\n{{ $('Basic LLM Chain').item.json.output.category }}\n\nReason:\n{{ $('Basic LLM Chain').item.json.output.reason }}\n\nPlease review manually.",
         "options": {},
         "embeds": {
           "values": []
@@ -793,7 +749,7 @@
       "type": "n8n-nodes-base.discord",
       "typeVersion": 2,
       "position": [
-        496,
+        704,
         128
       ],
       "id": "a9219b97-ac20-450f-8285-40e33ee22764",
@@ -805,9 +761,744 @@
           "name": "Discord - Manager Alert"
         }
       }
+    },
+    {
+      "parameters": {
+        "jsCode": "const current = $input.first();\n\nconst gmail = $('Gmail Trigger').item;\n\nreturn [\n  {\n    json: current.json,\n\n    // restore original Gmail attachments\n    binary: gmail.binary || {}\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1632,
+        -384
+      ],
+      "id": "c2046f9b-5677-43f7-b909-8b4cb2bca673",
+      "name": "Prepare HR Forward"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first();\n\nconst j = input.json;\n\nreturn [\n  {\n    json: {\n      message_id: j.id,\n      thread_id: j.threadId,\n\n      sender:\n        j.from?.value?.[0]\n          ? `${j.from.value[0].address || ''} - ${j.from.value[0].name || ''}`.trim()\n          : '',\n\n      Subject: j.subject || '',\n\n      body: j.text || j.html || '',\n\n      timestamp: j.date || new Date().toISOString(),\n\n      attachment_count: Object.keys(input.binary || {}).length\n    },\n\n    // THIS preserves the real Gmail attachment files\n    binary: input.binary || {}\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1168,
+        16
+      ],
+      "id": "13dc1f62-fa5a-40b6-9ca6-74cd26739d50",
+      "name": "Normalize Email"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1k6pDTApmWhj1uVvIwOVUtWFANwfzrPyQHLMsivFQO7Q",
+          "mode": "list",
+          "cachedResultName": "Task6_Email_Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1k6pDTApmWhj1uVvIwOVUtWFANwfzrPyQHLMsivFQO7Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1276530422,
+          "mode": "list",
+          "cachedResultName": "Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1k6pDTApmWhj1uVvIwOVUtWFANwfzrPyQHLMsivFQO7Q/edit#gid=1276530422"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "message_id",
+              "lookupValue": "={{ $json.message_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -960,
+        16
+      ],
+      "id": "ece989df-7603-41fc-8687-adedc1167cd0",
+      "name": "Find Existing Message",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fNTyzLTu6GtTrqqQ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "23fa7452-f37f-4d79-8633-378caa5fa2db",
+              "leftValue": "={{ $json.message_id ?? '' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -752,
+        16
+      ],
+      "id": "d682f871-211a-4237-9a0d-3a2a921933a9",
+      "name": "Already Processed?"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        -144
+      ],
+      "id": "c3342015-e1ce-4d7b-861b-49abdc81b0d9",
+      "name": "STOP"
+    },
+    {
+      "parameters": {
+        "jsCode": "const email = $('Normalize Email').item;\n\nreturn [\n  {\n    json: email.json,\n    binary: email.binary || {}\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -544,
+        16
+      ],
+      "id": "bd179c06-a56e-48b4-ae84-79502462da25",
+      "name": "Restore Email Data"
+    },
+    {
+      "parameters": {
+        "operation": "markAsRead",
+        "messageId": "={{ $('Normalize Email').item.json.message_id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        3152,
+        -192
+      ],
+      "id": "226de52a-f169-4851-862c-aee9f0929d1f",
+      "name": "Mark a message as read",
+      "webhookId": "8a0355e0-d01b-4094-9760-7c1ba65d3f52",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rndEKXBccd9DMp8G",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1k6pDTApmWhj1uVvIwOVUtWFANwfzrPyQHLMsivFQO7Q",
+          "mode": "list",
+          "cachedResultName": "Task6_Email_Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1k6pDTApmWhj1uVvIwOVUtWFANwfzrPyQHLMsivFQO7Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1276530422,
+          "mode": "list",
+          "cachedResultName": "Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1k6pDTApmWhj1uVvIwOVUtWFANwfzrPyQHLMsivFQO7Q/edit#gid=1276530422"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "message_id": "={{ $('Normalize Email').item.json.message_id }}",
+            "thread_id": "={{ $('Normalize Email').item.json.thread_id }}",
+            "sender": "={{ $('Normalize Email').item.json.sender }}",
+            "subject": "={{ $('Normalize Email').item.json.Subject }}",
+            "email_timestamp": "={{ $('Normalize Email').item.json.timestamp }}",
+            "processed_at": "={{ $now }}",
+            "category": "={{ $('Basic LLM Chain').item.json.output.category }}",
+            "priority": "={{ $('Basic LLM Chain').item.json.output.priority }}",
+            "confidence": "={{ $('Basic LLM Chain').item.json.output.confidence }}",
+            "action": "={{ $('Basic LLM Chain').item.json.output.action }}",
+            "reason": "={{ $('Basic LLM Chain').item.json.output.reason }}",
+            "rag_used": "={{ ['general_query','sales_inquiry'].includes($('Basic LLM Chain').item.json.output.category) }}",
+            "response_sent": "={{ $('Basic LLM Chain').item.json.output.action === 'rag_query' }}",
+            "forwarded_to": "={{   $('Basic LLM Chain').item.json.output.action === 'forward_hr'     ? 'HR'     : ['forward_manager','urgent_escalation'].includes($('Basic LLM Chain').item.json.output.action)       ? 'Manager'       : 'None' }}",
+            "status": "={{   ({     rag_query: 'customer_query_processed',     forward_hr: 'forwarded_hr',     forward_manager: 'forwarded_manager',     human_review: 'human_review_required',     urgent_escalation: 'urgent_escalated',     archive: 'archived',     mark_spam: 'marked_spam'   })[$('Basic LLM Chain').item.json.output.action] || 'processed' }}"
+          },
+          "matchingColumns": [
+            "message_id"
+          ],
+          "schema": [
+            {
+              "id": "message_id",
+              "displayName": "message_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "thread_id",
+              "displayName": "thread_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sender",
+              "displayName": "sender",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email_timestamp",
+              "displayName": "email_timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "processed_at",
+              "displayName": "processed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "priority",
+              "displayName": "priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "confidence",
+              "displayName": "confidence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "action",
+              "displayName": "action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "reason",
+              "displayName": "reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "rag_used",
+              "displayName": "rag_used",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "response_sent",
+              "displayName": "response_sent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "forwarded_to",
+              "displayName": "forwarded_to",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3360,
+        -192
+      ],
+      "id": "1cbd4880-5ebc-4bd0-9417-9dd6bd9a4f09",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fNTyzLTu6GtTrqqQ",
+          "name": "Google Sheets account"
+        }
+      }
     }
   ],
-  "pinData": {},
+  "pinData": {
+    "Gmail Trigger": [
+      {
+        "json": {
+          "id": "1a0e44b36f10a886",
+          "threadId": "1a0e44b36f10a886",
+          "labelIds": [
+            "UNREAD",
+            "IMPORTANT",
+            "CATEGORY_PERSONAL",
+            "INBOX"
+          ],
+          "sizeEstimate": 7079,
+          "headers": {
+            "delivered-to": "Delivered-To: saleem290803@gmail.com",
+            "received": "Received: from 498586711441 named unknown by gmailapi.google.com with\r\n HTTPREST; Sun, 27 Sep 2026 12:15:28 -0700",
+            "x-received": "X-Received: by 2002:a05:7300:de0b:b0:341:f4d6:d9a5 with SMTP id\r\n 5a478bee46e88-3427169be76mr11247817eec.1.1790536529218; Sun, 27 Sep 2026\r\n 12:15:29 -0700 (PDT)",
+            "arc-seal": "ARC-Seal: i=1; a=rsa-sha256; t=1790536529; cv=none;\r\n        d=google.com; s=arc-20260327;\r\n        b=S/ot98WeNBoaJAcNSNbQ7qYZNgyVKJu9PhgmggmFaEWPdqoJrAWY5lkJGkeBq95UIU\r\n         65UT0SkDu2LvzPE5SOToCJbnzhxkWHcyyMncQOORajQVQ4HGvijNjAS5uZDpk2P0aSbh\r\n         5qhQibbpV6YbyP6ajtl3lYUIVz56B9ruyatg20uQQTCm6Kv40zCS58dxrck8rw5a0A/0\r\n         xwJX/8KXKd1K+zCHFQbdg37Dg7tkv92Sv479kCJLHJH2vV1OfYw5x0iD34K8jcYkw2GE\r\n         SFcsQVTV68+a0GLYRPG/eXCus+YYK4a0gRdsgvTEumyst68zfcU0tLG/F+TvYZzmQSy8\r\n         Gw2g==",
+            "arc-message-signature": "ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;\r\n        h=to:subject:message-id:date:from:mime-version:dkim-signature;\r\n        bh=tD8NkMVfycy9550IFIUo5tLcqdZNNtoWrHJbLwIAbvI=;\r\n        fh=lGUtuOQ5bX9Rp/yrS32Aw5m0hmRf5iwwPKyQO0HVTqg=;\r\n        b=MH6wMWlhAhAR4Su12TmEVNg3Oh7/RM1Sfk8a9VJ7N3ATg8JQQ0SIuIkgvyPx9NEHO8\r\n         gIbRm4nXr8bXtBbLW7nWWk3Yg5orKSP2Z/uAT6pDYPeMHufXdqaCZIY8AELTgjeHanoG\r\n         Z1uVC/CYZ3t+AMs4h8pq0wEkh9pargbxnwosUEgjVPF0IcFj7puhuUAHRW7jY+n8P9DS\r\n         bySX9i6fcKww6HVzsEKaCkGdE+LOmWycIsqN6uyvqXd/osAlpPBPGQoq/uKQMf7QEox3\r\n         796i/3tk8pWv82Jd95/K5VGcgObVFNY3TkkcWLMFsOkQZOYnVuGw8vdH5t3qjkWXQ6eB\r\n         go7Q==;\r\n        dara=google.com",
+            "arc-authentication-results": "ARC-Authentication-Results: i=1; mx.google.com; arc=none",
+            "return-path": "Return-Path: <unofficial.ms1@gmail.com>",
+            "received-spf": "Received-SPF: pass (google.com: domain of unofficial.ms1@gmail.com designates 209.85.220.65 as permitted sender) client-ip=209.85.220.65;",
+            "authentication-results": "Authentication-Results: mx.google.com;\r\n       dkim=pass header.i=@gmail.com header.s=20251104 header.b=i7HfEczv;\r\n       arc=pass (i=1);\r\n       spf=pass (google.com: domain of unofficial.ms1@gmail.com designates 209.85.220.65 as permitted sender) smtp.mailfrom=unofficial.ms1@gmail.com;\r\n       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;\r\n       dara=pass header.i=@gmail.com",
+            "dkim-signature": "DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n        d=gmail.com; s=20251104; t=1790536529; x=1791141329; dara=google.com;\r\n        h=content-type:to:subject:message-id:date:from:mime-version:from:to\r\n         :cc:subject:date:message-id:reply-to:content-type;\r\n        bh=tD8NkMVfycy9550IFIUo5tLcqdZNNtoWrHJbLwIAbvI=;\r\n        b=i7HfEczvI0VPQJ+hmuQju2DyYc51aJAXTbEtuRS4uo1Xqq0uprqNMxKoxgxpH//vmt\r\n         IfbAjY1z4vZbojsTRfybsIj/o+KQyHjx6UPS8pZwbneF//T7YUkxBeYJVuJJdqAG0YpZ\r\n         mEG3l8BCE3QrbH8qMRzEEvnP9A8CVmgM2nT83yVo0/apOnCxpUtr041lNDT2OQ44CG3j\r\n         PSM0RLmvKRsK7nTnccFgxABKDury6c4OTh1I8IGJo8MRmm8ZBaW3uwLShcsA2KXeWD4O\r\n         uXmPM3GlhBGocfijyhtcBbOGFWcBlktj63WAPNdmGBQdhzCdOMKBZEhrAPoTg1spMQ9x\r\n         2Z8Q==",
+            "x-google-dkim-signature": "X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n        d=1e100.net; s=20260707; t=1790536529; x=1791141329;\r\n        h=content-type:to:subject:message-id:date:from:mime-version:x-gm-gg\r\n         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to\r\n         :content-type;\r\n        bh=tD8NkMVfycy9550IFIUo5tLcqdZNNtoWrHJbLwIAbvI=;\r\n        b=N11+NZ3yRBs2cIUhtN6ylacfmyGl4RUILib+twLPbRYxVeoDPJGiJs7dvrCLPI035z\r\n         Yf8IzFw3Ta9dZoK1ghEq6CnhplIOwkD0qEC8IepHc1x48fuVeUNAE7hhYfHkS56kRJ/9\r\n         gyW0FRpCRznja9RZrliUI3Z/vmvSmHA9JOOfihTUc6/Uak9ls+FeKgm8tPPFDG4lDXV7\r\n         dOkDtze6j6jQMoWsnq39lj519wHubgijcqvLcVajir811oh8ASDQmuqSL6cjb9TZqxcd\r\n         EwhuoZ1kEwSRhYaK5L2/hM5uEGuBdSG5fN+JXJMlCo8KL+Ye2WsuWcdzYQni2fqYKXhk\r\n         Nyqg==",
+            "x-gm-message-state": "X-Gm-Message-State: AFq9FYKwvpLmGZG4HdyPcaJEldH4UfFnTb3jk2t+0cftJs1rGHvsyeNR\r\n\tjvt24ynhBrtrWZ2xwZg/xaMYHxaLr3sZzda1OQJV8b0Cg5vbpGMY67NoABov2UR2Cu3Y4aifdfv\r\n\tFh8podXTf2dpwRxGYCE3Ka50YweKWzS3FtiRN",
+            "x-gm-gg": "X-Gm-Gg: AYBFou2j09ze1JuGXe2KARQ2wm+Gj77CIEYiAvIQDavklYT9ZgRvfQQbNdpw3tV2X1n\r\n\tM9xWPq4DgADu9yhV1jkMSs39rdL9yQ4oDzcCHLZDgEw9voBvc2KBWVZ5QYObDn5HRxj4Ajom4Bf\r\n\tIXevA90O+mpdAXdP2f8iHBmG9wJS2RrDCj7eKACVkf2OotpQv8XqRXQ/SU1PzO3H8zt/kRjf8QA\r\n\t840L8eMAHKZ+zRV1SfAsRp+i7rDgML3DA0rTnL6bpDWa7tsXYdHFStAbjGb14QoP/yAFPel0Be+\r\n\tC96yKSwz1q6nUZH0u5iFVbdhmZ/RPOrSwjAWsyN8V5UbZZL6daYGhDkt",
+            "mime-version": "MIME-Version: 1.0",
+            "from": "From: Muhammad Saleem <unofficial.ms1@gmail.com>",
+            "date": "Date: Sun, 27 Sep 2026 12:15:28 -0700",
+            "x-gm-features": "X-Gm-Features: AclHuK9RNXxrymxzPGnY999cImN4d1WbXy_iT8L3lc3FI0HNqcZVBf_foxMq2NU",
+            "message-id": "Message-ID: <CAAbTxnE17OSBL22f5iQZrp9tv_-D2pwn4S4_bHdhA0365PKE4A@mail.gmail.com>",
+            "subject": "Subject: [TASK6 TEST 09] Claim your prize now",
+            "to": "To: saleem290803@gmail.com",
+            "content-type": "Content-Type: text/plain; charset=\"UTF-8\""
+          },
+          "text": "Congratulations! You won GBP 5 million. Send your bank details\nimmediately to claim it.\n",
+          "textAsHtml": "<p>Congratulations! You won GBP 5 million. Send your bank details<br/>immediately to claim it.</p>",
+          "subject": "[TASK6 TEST 09] Claim your prize now",
+          "date": "2026-09-27T19:15:28.000Z",
+          "to": {
+            "value": [
+              {
+                "address": "saleem290803@gmail.com",
+                "name": ""
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><a href=\"mailto:saleem290803@gmail.com\" class=\"mp_address_email\">saleem290803@gmail.com</a></span>",
+            "text": "saleem290803@gmail.com"
+          },
+          "from": {
+            "value": [
+              {
+                "address": "unofficial.ms1@gmail.com",
+                "name": "Muhammad Saleem"
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><span class=\"mp_address_name\">Muhammad Saleem</span> &lt;<a href=\"mailto:unofficial.ms1@gmail.com\" class=\"mp_address_email\">unofficial.ms1@gmail.com</a>&gt;</span>",
+            "text": "\"Muhammad Saleem\" <unofficial.ms1@gmail.com>"
+          },
+          "messageId": "<CAAbTxnE17OSBL22f5iQZrp9tv_-D2pwn4S4_bHdhA0365PKE4A@mail.gmail.com>",
+          "html": false
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      },
+      {
+        "json": {
+          "id": "1a0e44b15a3ea407",
+          "threadId": "1a0e44b15a3ea407",
+          "labelIds": [
+            "UNREAD",
+            "IMPORTANT",
+            "CATEGORY_PERSONAL",
+            "INBOX"
+          ],
+          "sizeEstimate": 7063,
+          "headers": {
+            "delivered-to": "Delivered-To: saleem290803@gmail.com",
+            "received": "Received: from 498586711441 named unknown by gmailapi.google.com with\r\n HTTPREST; Sun, 27 Sep 2026 12:15:19 -0700",
+            "x-received": "X-Received: by 2002:a05:693c:65d6:b0:33e:8552:6e06 with SMTP id\r\n 5a478bee46e88-3426cfdd194mr11852581eec.0.1790536520223; Sun, 27 Sep 2026\r\n 12:15:20 -0700 (PDT)",
+            "arc-seal": "ARC-Seal: i=1; a=rsa-sha256; t=1790536520; cv=none;\r\n        d=google.com; s=arc-20260327;\r\n        b=ch2Q2DKcfdULKYUFlxIYWuPRQwbx7gJxr0xARDRRjmRlLj021lQDZmD+L+1fZ/JAbW\r\n         MvefSFxjoA3Lw9nxRZfnONNu65qqmcVA3992vAwm5QPuWmjEIAAdhyJT8wuRfBrvGKSY\r\n         l03ur7IJr0ZC6NvCs1/goYSXAr6sP7K+tXRPlQr9ecdxYH4f7Ce67ZlDJrTQ3mJ71sao\r\n         5abeeJ0QfPWrp3yaXzXUKiUFZtu7hSSMh/FxPGBaJBkK6KZDsTSHnufZKcgMnAgVRPF8\r\n         5m1N82HgYChfNlif6KRicoN51Pk9AzvhlJd6MHT0nKbZDKKnttagrtDIlsdoTQX83BjY\r\n         G2ZA==",
+            "arc-message-signature": "ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;\r\n        h=to:subject:message-id:date:from:mime-version:dkim-signature;\r\n        bh=dvXz6+I/LLMG1DUkotWTu7hf/z+Av9UIleRDZjwD80s=;\r\n        fh=lGUtuOQ5bX9Rp/yrS32Aw5m0hmRf5iwwPKyQO0HVTqg=;\r\n        b=pReTHtDoF5bc8011R4TEXLUr/YVphRnXTaFjyE+FRAEE0FlnDbQ5kxzEw7zHNZ7YEu\r\n         3NXNZyTk+bYgk8HxAs4S5Nm3r8oNnCl1irGYOAB7PDWJXlNZypI/qlD7CLvNRl+7IiPd\r\n         xe+eRyiwnbIkGPmLwRdxZnHuQr/0iFHbYx5iaMLFnU6+sFun1QuOSF+O42m0oaNJ6ia5\r\n         LiojpCZjwQcvFCuYEqKXM3ZZ3X4tOs3FgS033DZFlfESbl5/SOdWKLFsOjrCOzHdvBxZ\r\n         4OCsCbeZeO116XTVqqQBB+eA9zLUmykekEE07ZzAdLQ+U2y15/lSS8cSbIpvJYFWm1NN\r\n         4K7w==;\r\n        dara=google.com",
+            "arc-authentication-results": "ARC-Authentication-Results: i=1; mx.google.com; arc=none",
+            "return-path": "Return-Path: <unofficial.ms1@gmail.com>",
+            "received-spf": "Received-SPF: pass (google.com: domain of unofficial.ms1@gmail.com designates 209.85.220.65 as permitted sender) client-ip=209.85.220.65;",
+            "authentication-results": "Authentication-Results: mx.google.com;\r\n       dkim=pass header.i=@gmail.com header.s=20251104 header.b=OUcERmtp;\r\n       arc=pass (i=1);\r\n       spf=pass (google.com: domain of unofficial.ms1@gmail.com designates 209.85.220.65 as permitted sender) smtp.mailfrom=unofficial.ms1@gmail.com;\r\n       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;\r\n       dara=pass header.i=@gmail.com",
+            "dkim-signature": "DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n        d=gmail.com; s=20251104; t=1790536520; x=1791141320; dara=google.com;\r\n        h=content-type:to:subject:message-id:date:from:mime-version:from:to\r\n         :cc:subject:date:message-id:reply-to:content-type;\r\n        bh=dvXz6+I/LLMG1DUkotWTu7hf/z+Av9UIleRDZjwD80s=;\r\n        b=OUcERmtpjw6GQ7Sz/Q8JajfgM08dw0ecvg8OXUpM7m1jOb6/EYuoAlLTQ6HYufKefo\r\n         VM4mPO3Rzr6nZKNamiSh6c8Odi6AAKL3i6SwrFsG5Fk4o2zYiTTLGucjCzqe4ulN7S/G\r\n         Dn/VeL8UQLv5D1c04cdGqTgspxFYYZ+GJtrey47DUss/Ognxs7Bge4gjL7kKFRjPL/if\r\n         iiZmh1afsPtodYsM6xkvYphc8JQANi1VDtWEE7ulR/P6qEmc32HsSXFoa3D7HsxF5vzL\r\n         NyMG6/vXP8yCttSw9MdB4I7WzxDIkMr3OAB7scNKSexVs8TEUdWiyQSJvBhFrGKd7o9w\r\n         bfYA==",
+            "x-google-dkim-signature": "X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n        d=1e100.net; s=20260707; t=1790536520; x=1791141320;\r\n        h=content-type:to:subject:message-id:date:from:mime-version:x-gm-gg\r\n         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to\r\n         :content-type;\r\n        bh=dvXz6+I/LLMG1DUkotWTu7hf/z+Av9UIleRDZjwD80s=;\r\n        b=BPMB91BNAE7xZdtSZ6yYfy1fc72r1mFq5bycSenhxD4R9DH2PiVKt3fgv4MUOX2YR2\r\n         Weyq3LHMVZq5rmiS/dCdOqWnTvurJ6O0Ejx2ptno9d8w8X6cqXsA8ztBiaxaAdv2ggUX\r\n         11tjxfJylRR+jUqUTEavbmkGZ8CJ6ujZDX0Dnptr04Agi5tD/YPIniOzDuvlJdOmuHVZ\r\n         uoPq7YSMkzBEos/6MAFw29EOFIGFEIRhSBw6Val1ouw61A1P/k61rEGdBrYQHZWF5hwj\r\n         Gr5ErhiOqbDiyAtb6xhu3llR+GutNzSNx+eS9g9kyXJKM8ZUlsxMMprIe6uf+czPVGzV\r\n         PRuA==",
+            "x-gm-message-state": "X-Gm-Message-State: AFuF++nTnzWLtaZA9TO6zTP4uG1O4YvgOo7kBFTcRuslGsaVXmGwJxOw\r\n\tdpjwyYAMvQHWKX6QOdrWMRicEYCQmg6YNNqdzB+OUt5MECo5/9XOJaZbppuRS6l6+IDCLpVzqFY\r\n\tHbWoCm8e+3sBiGvwZ2twFKhLUPcp5uGDtJDbF",
+            "x-gm-gg": "X-Gm-Gg: AYBFou2YPMxVYUyIZ4suKhZHVl4njndzvEzhgEzEA6dd4jXQkKTWPZjRM92iLxPUfQD\r\n\th6EEDY4eK++eGUtEdCs8026+zh6PMZLwYuqsW7C3ShfpnnFcD5GQFHOAWzBz8ymEa1x1RhAxZOX\r\n\trM9Uqg3SsWD3bR5R7QtarUAd7KkbOMFDLMVoj9aG1hkcz4AeE7AhGZEqcCf0kGQXtG41ZSJc9vz\r\n\to7I/rig4V+cbpTFPpeRsZrxmYxMngWuMXPYZ/93KLTO6QPN5KIkO0PVB0RuIkNwZQ4qbIQPsrTV\r\n\tNheNieiObdmP6VTn3c15fQWkqndAkRgghIwO5Vx9+LehIJhiaMqyUoI=",
+            "mime-version": "MIME-Version: 1.0",
+            "from": "From: Muhammad Saleem <unofficial.ms1@gmail.com>",
+            "date": "Date: Sun, 27 Sep 2026 12:15:19 -0700",
+            "x-gm-features": "X-Gm-Features: AclHuK_sNqzzIuMVwWgVK24yl-LAFmGHomcNINAO2NGv3n4a7RCN_q8XiuirFkM",
+            "message-id": "Message-ID: <CAAbTxnENb_9MxMUYcu1BCC+pj0pqv8dmiCn2P9wDEivon+YYJw@mail.gmail.com>",
+            "subject": "Subject: [TASK6 TEST 08] Special marketing offer",
+            "to": "To: saleem290803@gmail.com",
+            "content-type": "Content-Type: text/plain; charset=\"UTF-8\""
+          },
+          "text": "Get 50% off our digital marketing package this week. Contact us today.\n",
+          "textAsHtml": "<p>Get 50% off our digital marketing package this week. Contact us today.</p>",
+          "subject": "[TASK6 TEST 08] Special marketing offer",
+          "date": "2026-09-27T19:15:19.000Z",
+          "to": {
+            "value": [
+              {
+                "address": "saleem290803@gmail.com",
+                "name": ""
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><a href=\"mailto:saleem290803@gmail.com\" class=\"mp_address_email\">saleem290803@gmail.com</a></span>",
+            "text": "saleem290803@gmail.com"
+          },
+          "from": {
+            "value": [
+              {
+                "address": "unofficial.ms1@gmail.com",
+                "name": "Muhammad Saleem"
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><span class=\"mp_address_name\">Muhammad Saleem</span> &lt;<a href=\"mailto:unofficial.ms1@gmail.com\" class=\"mp_address_email\">unofficial.ms1@gmail.com</a>&gt;</span>",
+            "text": "\"Muhammad Saleem\" <unofficial.ms1@gmail.com>"
+          },
+          "messageId": "<CAAbTxnENb_9MxMUYcu1BCC+pj0pqv8dmiCn2P9wDEivon+YYJw@mail.gmail.com>",
+          "html": false
+        },
+        "pairedItem": {
+          "item": 1
+        }
+      },
+      {
+        "json": {
+          "id": "1a0e44af458b7d6c",
+          "threadId": "1a0e44af458b7d6c",
+          "labelIds": [
+            "UNREAD",
+            "IMPORTANT",
+            "CATEGORY_PERSONAL",
+            "INBOX"
+          ],
+          "sizeEstimate": 7061,
+          "headers": {
+            "delivered-to": "Delivered-To: saleem290803@gmail.com",
+            "received": "Received: from 498586711441 named unknown by gmailapi.google.com with\r\n HTTPREST; Sun, 27 Sep 2026 12:15:10 -0700",
+            "x-received": "X-Received: by 2002:a05:7301:1f15:b0:33e:6714:3945 with SMTP id\r\n 5a478bee46e88-34271c88f71mr15180397eec.2.1790536511916; Sun, 27 Sep 2026\r\n 12:15:11 -0700 (PDT)",
+            "arc-seal": "ARC-Seal: i=1; a=rsa-sha256; t=1790536512; cv=none;\r\n        d=google.com; s=arc-20260327;\r\n        b=dXCQe6cpKpXq9wIkVpdPrOTTUanexooVUFePOqWdNMwk+h8Asp68RXIOR6clk19qC7\r\n         ccDkm5BMioEtADGGOY91Oq4ZCmUIk8FLaYr1GzduPRWPDAiqAdeDYclB4Q6bQV5lAtt1\r\n         Q68QSMAwH9xy0krZr8rrgArO67F93kE3v7wDgoD3gbAsGeBA24goXRCpZJ79wJ0S43Yq\r\n         oshXPFjn0G5zhOwjhkU+hOyMO7rWkDW1kLF8B1XUhwqZoM/SkT6VL8WdpLRnv88gFTkQ\r\n         r2SbQ1DcBcweVIgeMDM9+S7jyAlDGGr+nV50ZBfejV44HEOMolgKJ5f0UKYKRysAd1ch\r\n         mneg==",
+            "arc-message-signature": "ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;\r\n        h=to:subject:message-id:date:from:mime-version:dkim-signature;\r\n        bh=uQY67bkx0vErBz7q0FpPalwr2J21ZlBMquFMTYCUbN4=;\r\n        fh=lGUtuOQ5bX9Rp/yrS32Aw5m0hmRf5iwwPKyQO0HVTqg=;\r\n        b=K0gBgGTDvxz9hGuF2qYQJ+L47eu/uQC5NIBfCBFFNb7EJLXarlI2pfd+N5nSeBITAW\r\n         PDttFLdooziK+0SYXZBZWgGlGeEToWQWgbsU0wohAIcV/jKf+ly6+6UKXab6AnNJtgez\r\n         v5oDcLpA/djnSq+sKAP8aHXkZxGKYXmEMByIUhn292cPK1XsXEai1sppXc4k6c42sFh5\r\n         8KFKycaVTIcfrCaBKaGuwDL3mW2aecb5yXu8ZXW2yP+2iAcGgFm9yEsZ2sgLZX+QbRQV\r\n         5j/ogG5pBkxfzQVQW07z4O1aPgtIOhCfTbtj3q6+/FzIVZdIHRQDWb9JUXdqOamejzqc\r\n         3iRA==;\r\n        dara=google.com",
+            "arc-authentication-results": "ARC-Authentication-Results: i=1; mx.google.com; arc=none",
+            "return-path": "Return-Path: <unofficial.ms1@gmail.com>",
+            "received-spf": "Received-SPF: pass (google.com: domain of unofficial.ms1@gmail.com designates 209.85.220.65 as permitted sender) client-ip=209.85.220.65;",
+            "authentication-results": "Authentication-Results: mx.google.com;\r\n       dkim=pass header.i=@gmail.com header.s=20251104 header.b=bnQqUuH6;\r\n       arc=pass (i=1);\r\n       spf=pass (google.com: domain of unofficial.ms1@gmail.com designates 209.85.220.65 as permitted sender) smtp.mailfrom=unofficial.ms1@gmail.com;\r\n       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;\r\n       dara=pass header.i=@gmail.com",
+            "dkim-signature": "DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n        d=gmail.com; s=20251104; t=1790536512; x=1791141312; dara=google.com;\r\n        h=content-type:to:subject:message-id:date:from:mime-version:from:to\r\n         :cc:subject:date:message-id:reply-to:content-type;\r\n        bh=uQY67bkx0vErBz7q0FpPalwr2J21ZlBMquFMTYCUbN4=;\r\n        b=bnQqUuH6zMM6SojAno2dgTrksqRCXRyqtflMme03JhxitZb/cBmzHFsepW44Cbr2J8\r\n         gPXNmQ9F8Y9DBjJwfuB+8+NhRAeVOU3mSFP9L1czzJjLRkR7reCT7Af1YZesRFfNmISI\r\n         07CIVbFgv7ROWaJ7ERHW7zL4nhum7DTFugAmoWvmC/UFm/9NjorsjzMtvxAhwdXj9+sj\r\n         RzqMIxfxSr559tamZVvx3rupYVYzd0OToQg/1+O+8wFvI7eNxAUPzuG6VUrZovAH6FC5\r\n         YcCmKRGwgR3jMN0YpmNPMBnJGKlUIAcUfWUtSAUE2INDChLhvY9ww4/69AgHIx4CAI49\r\n         wE5w==",
+            "x-google-dkim-signature": "X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n        d=1e100.net; s=20260707; t=1790536512; x=1791141312;\r\n        h=content-type:to:subject:message-id:date:from:mime-version:x-gm-gg\r\n         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to\r\n         :content-type;\r\n        bh=uQY67bkx0vErBz7q0FpPalwr2J21ZlBMquFMTYCUbN4=;\r\n        b=uoDhH62+mkt38BdGzMMDs7THXnguXCitRpTEWKtbrhZhqVJ+ReCJhXf8UOd7+u9Vtp\r\n         q17VeHjNwQSzSrVM+SEqTdJ9G/r4EJZnmyqi81i/vyS90IDiQL55j9XnfMKOpM8zxGhi\r\n         fS1DuYOchlMT/l0r+lAk6wOYYqHr42rCBvJu3g8W2PkEwlbcsotullg4Xs2LlEa5NKrq\r\n         5Bbrr9KHigb2QlDBrHlnw6UPXo51D1hztY52jecSUm+UB+YZDxrqDn8ttjm1m5SkiDPC\r\n         pFXt/b9L92QrNfWmWmDCJtCvl63SNo5QEy8MtSCN7QbizfTKsdKnEzX5L8qyvAhs/m6F\r\n         2cIA==",
+            "x-gm-message-state": "X-Gm-Message-State: AFuF++lRIfR3QMgWb66fNDVKbu9hz5OyDSXZaHJ9LhlqRCjSBcj9wwuy\r\n\t9Z4Hg+2+79oFN5fRlkTCfmxq1cWoszBHjuMbmQztBixHsqt1LmGXtalGyI6MU7kiXF/2FYKLWDD\r\n\tVfoFGdOQabKTzCPb2UEaG7/kb2rcfha4agBAW",
+            "x-gm-gg": "X-Gm-Gg: AYBFou1CBy0uQx8EV+FEjiRicCK9AUpZq6GV1quZ08E5zImJEP2Vs0oxVbG5Sz4MHBx\r\n\tlYVPBT/a+QP2cFkG5+zSGIRSO340l3VQUwucml0mXSxVCdxGXQEi9qvfOFYIT1J3VDwDfV2jlpP\r\n\tZb58DyBi1lTSkWSJL6pvm7ziT8M0W/mZuyido2dKONYhuDN+IKaYXPTmAmFXKKxVQENma7gULXL\r\n\tcMIbP144FIST3LmAkYaJuQx/0rQJzZ72f7089Ioz3Yp4TrqFQDxSjPq+6el6NALARZkoFJpsm1x\r\n\t50Zeg70UTrQq13uS6WLpkZLe0Hm6B3k9BmKIkfESvtgh0nHIbKJMtlw=",
+            "mime-version": "MIME-Version: 1.0",
+            "from": "From: Muhammad Saleem <unofficial.ms1@gmail.com>",
+            "date": "Date: Sun, 27 Sep 2026 12:15:10 -0700",
+            "x-gm-features": "X-Gm-Features: AclHuK8REHQ_a4H5YkcSoSLaJcQ21hbj6QdvSrefKD8--JF0pEG53L0SUo2L3UM",
+            "message-id": "Message-ID: <CAAbTxnGhZ9Fxdp5K8L2jeBzBOuc0dfjm1VYAX87UtS15+sQWtQ@mail.gmail.com>",
+            "subject": "Subject: [TASK6 TEST 07] URGENT payment issue",
+            "to": "To: saleem290803@gmail.com",
+            "content-type": "Content-Type: text/plain; charset=\"UTF-8\""
+          },
+          "text": "Our payment has been charged twice and we need immediate assistance.\n",
+          "textAsHtml": "<p>Our payment has been charged twice and we need immediate assistance.</p>",
+          "subject": "[TASK6 TEST 07] URGENT payment issue",
+          "date": "2026-09-27T19:15:10.000Z",
+          "to": {
+            "value": [
+              {
+                "address": "saleem290803@gmail.com",
+                "name": ""
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><a href=\"mailto:saleem290803@gmail.com\" class=\"mp_address_email\">saleem290803@gmail.com</a></span>",
+            "text": "saleem290803@gmail.com"
+          },
+          "from": {
+            "value": [
+              {
+                "address": "unofficial.ms1@gmail.com",
+                "name": "Muhammad Saleem"
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><span class=\"mp_address_name\">Muhammad Saleem</span> &lt;<a href=\"mailto:unofficial.ms1@gmail.com\" class=\"mp_address_email\">unofficial.ms1@gmail.com</a>&gt;</span>",
+            "text": "\"Muhammad Saleem\" <unofficial.ms1@gmail.com>"
+          },
+          "messageId": "<CAAbTxnGhZ9Fxdp5K8L2jeBzBOuc0dfjm1VYAX87UtS15+sQWtQ@mail.gmail.com>",
+          "html": false
+        },
+        "pairedItem": {
+          "item": 2
+        }
+      },
+      {
+        "json": {
+          "id": "1a0e44ad02fa9d26",
+          "threadId": "1a0e44ad02fa9d26",
+          "labelIds": [
+            "IMPORTANT",
+            "CATEGORY_PERSONAL",
+            "INBOX"
+          ],
+          "sizeEstimate": 7054,
+          "headers": {
+            "delivered-to": "Delivered-To: saleem290803@gmail.com",
+            "received": "Received: from 498586711441 named unknown by gmailapi.google.com with\r\n HTTPREST; Sun, 27 Sep 2026 19:15:02 +0000",
+            "x-received": "X-Received: by 2002:a05:693c:4099:b0:33b:ee8a:2061 with SMTP id\r\n 5a478bee46e88-3427169bcc5mr12851918eec.1.1790536502944; Sun, 27 Sep 2026\r\n 12:15:02 -0700 (PDT)",
+            "arc-seal": "ARC-Seal: i=1; a=rsa-sha256; t=1790536503; cv=none;\r\n        d=google.com; s=arc-20260327;\r\n        b=O4ltT4cC6o6oSf/7KEaQEYqXTKAMT/zRuyBnpHjYj4ogTEc0SHXbAHDO+1oS4tbfMT\r\n         ng7i8xSYKTVNGY6I3/K7oDNq6K1NKttAGCVfwzixs3FBbS0DRX8NclTZAOWyzj6kCExh\r\n         nUNjSE+UHXs2apQwXN8NtZOV/9vR+w5vlBV7AF1gGvPBpNHllWndvEMLoIoP3Uz67bpg\r\n         Prik3vnE89zNWKCx8VR/fbSFdRaN6n5SP9DPPYnG/1SVjr8PuUeZ5MU53cNlb/if9DrR\r\n         /T6iLkO3hvWeWPRYaPyaw67Io5S/Wv5ajeNa8nVINvlgJRa9oRk88q8YCBaG+NUJuwGP\r\n         ZotQ==",
+            "arc-message-signature": "ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;\r\n        h=to:subject:message-id:date:from:mime-version:dkim-signature;\r\n        bh=j+zQqkEvx4aLBhVLGNgLWaIsILPhfx5OR79gXlt8fMg=;\r\n        fh=lGUtuOQ5bX9Rp/yrS32Aw5m0hmRf5iwwPKyQO0HVTqg=;\r\n        b=CdhaGaEFjIr5I1TTQ5YeYGrQcNj3ctWXKPPw3OxsdiA/R7MwVh/U5DwqSjHhvu8v3g\r\n         RIQfO8zr4BrIv6uyi4v2A2+8kCCHOe9yknUqalhW72vAn7wyr33pQJVwjygUg/7fP0WT\r\n         Y+8i7VJ0m9N2qwihXMh/kC7NWcvR0i3qDAzvZfWei7ckD2LvBy+nn0SYk9LnXiooEmA/\r\n         SJOsfXPRaK3KyVjqjILs69b6ZV4kso1vQgX9dVSTw2OQtwCzyMtwgGoRlo7i83Aq18AB\r\n         Z7LI3SyMYYeTUvulJAl4LEan05Tt7f3LyP3RrduDT2s7gqAqeHdS/lp6vjTptyFyqbU0\r\n         n2AA==;\r\n        dara=google.com",
+            "arc-authentication-results": "ARC-Authentication-Results: i=1; mx.google.com; arc=none",
+            "return-path": "Return-Path: <unofficial.ms1@gmail.com>",
+            "received-spf": "Received-SPF: pass (google.com: domain of unofficial.ms1@gmail.com designates 209.85.220.65 as permitted sender) client-ip=209.85.220.65;",
+            "authentication-results": "Authentication-Results: mx.google.com;\r\n       dkim=pass header.i=@gmail.com header.s=20251104 header.b=BvoGxwqc;\r\n       arc=pass (i=1);\r\n       spf=pass (google.com: domain of unofficial.ms1@gmail.com designates 209.85.220.65 as permitted sender) smtp.mailfrom=unofficial.ms1@gmail.com;\r\n       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;\r\n       dara=pass header.i=@gmail.com",
+            "dkim-signature": "DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n        d=gmail.com; s=20251104; t=1790536503; x=1791141303; dara=google.com;\r\n        h=content-type:to:subject:message-id:date:from:mime-version:from:to\r\n         :cc:subject:date:message-id:reply-to:content-type;\r\n        bh=j+zQqkEvx4aLBhVLGNgLWaIsILPhfx5OR79gXlt8fMg=;\r\n        b=BvoGxwqccBuGixFDpCMTsf9K6ilhSnnXTnXNVxcqa5uEiltwjGPG+qEOWySdRE69xQ\r\n         fJpn9D+gn6+pweu12DXmg+vjxZoym0oVgcirl43gmHwD203aJSn0uA2IIKv9s0G84Fhn\r\n         QmOhCdy31NXN7U3ToAn4A1t3LUrqC/x1qrawtEgXGydJslccSYv6m9ype0cCns5xMqdR\r\n         sSD7z8hJRuruXAG/w6iMi+/nQ1jWNYnJr7tDrM8HiaXOOTHa1673biP5Pv3S9KjQXI+J\r\n         wLLXQrHQXzxv28YhgObyIdsxcOGi2jW4nTROcUML3lvtEze9BC3FxrIHg1ERFHBMwCXV\r\n         crFw==",
+            "x-google-dkim-signature": "X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n        d=1e100.net; s=20260707; t=1790536503; x=1791141303;\r\n        h=content-type:to:subject:message-id:date:from:mime-version:x-gm-gg\r\n         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to\r\n         :content-type;\r\n        bh=j+zQqkEvx4aLBhVLGNgLWaIsILPhfx5OR79gXlt8fMg=;\r\n        b=Apmn+GPVgF+xJueuXR7CkyUT7F9nr6NTxOABP4eaUYlOVnvWkZHCNwWErgrkz8O1yR\r\n         ryCnwdbs0plIpO0HTdmQL1cd3DurmRrO82llJ6iAr9OteFs7tV85YjZybM3rO773mI5f\r\n         0mjBY+DmQ+93BV7BPX9r1WhPakXqMbpskFL+eJ+eLFdTJTu/CIn6DIf+SgQMn1aKhXtn\r\n         uWqKl1deB6pcY/7st6wEIGzyxdNqQRWHcB5pFTQ6n/W+NVDNIs5EjNF6nKLH7wLcuqWi\r\n         ObOlQXPFBPlUY9AQPBOk/RT0El1cRvXdiAMPNFd9rCMbvEKFCq36F6AffePuUcksvdfZ\r\n         VU1g==",
+            "x-gm-message-state": "X-Gm-Message-State: AFuF++kKfdRsSL8fA8GF1GG3ClxoWp9jkF+8cw0Aw9q13A0+1PV74l6D\r\n\tIS4X9Ck64pWB0bJfOV9jjgqB/5tXreVnk60w1nZaKeFPvFdtNbnbTlmOJrt52c2wf5r7mOYWHo1\r\n\t2+yDM4vNj2kYZhkJuyIZ/F0UGScsDqIKg5fSQ",
+            "x-gm-gg": "X-Gm-Gg: AYBFou3+FykJQGd3Ix+ry2/np7RHF147uYu7n6X76hEsL7si2Zp1DKR68y7kremK+sW\r\n\tKCSyCiTK8R+P8hB3tbYiFfFWojKe0kuJ1m5Sn4ras9NNQBgJMg+1ZaVZyrTnQzKfHBCc4hsL0/c\r\n\trs/+CyocO8JFJNFL7zLygIqaPYn0ct3fTqFOP+M2lfopQytt9TUAl3p6/JPoYUJPjCSTbWWp+dn\r\n\tT1JubWNun5yp02K34NgEKRkwPZlXkuo/Cxg1z6JfVmFNI8NQOls3EDMiTuSpVLyxjsgELNHVIK+\r\n\tMMGBMZh184CemgZzVLDw0gEw6lYSP206wGJipEiQ6QpDUzY3XC4OTeWh",
+            "mime-version": "MIME-Version: 1.0",
+            "from": "From: Muhammad Saleem <unofficial.ms1@gmail.com>",
+            "date": "Date: Sun, 27 Sep 2026 19:15:02 +0000",
+            "x-gm-features": "X-Gm-Features: AclHuK-Y5WTE14xV9F_JSqf8UbbB0uNVbE4XPc_YDPwjmQZbLOVe5KaftYV7dPU",
+            "message-id": "Message-ID: <CAAbTxnHbuTz-=UZB8nxsDf31NyUciJ2joitrBLJ4p--A+2Oj_w@mail.gmail.com>",
+            "subject": "Subject: [TASK6 TEST 06] Meeting request",
+            "to": "To: saleem290803@gmail.com",
+            "content-type": "Content-Type: text/plain; charset=\"UTF-8\""
+          },
+          "text": "Can we schedule a call tomorrow at 3 PM to discuss our requirements?\n",
+          "textAsHtml": "<p>Can we schedule a call tomorrow at 3 PM to discuss our requirements?</p>",
+          "subject": "[TASK6 TEST 06] Meeting request",
+          "date": "2026-09-27T19:15:02.000Z",
+          "to": {
+            "value": [
+              {
+                "address": "saleem290803@gmail.com",
+                "name": ""
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><a href=\"mailto:saleem290803@gmail.com\" class=\"mp_address_email\">saleem290803@gmail.com</a></span>",
+            "text": "saleem290803@gmail.com"
+          },
+          "from": {
+            "value": [
+              {
+                "address": "unofficial.ms1@gmail.com",
+                "name": "Muhammad Saleem"
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><span class=\"mp_address_name\">Muhammad Saleem</span> &lt;<a href=\"mailto:unofficial.ms1@gmail.com\" class=\"mp_address_email\">unofficial.ms1@gmail.com</a>&gt;</span>",
+            "text": "\"Muhammad Saleem\" <unofficial.ms1@gmail.com>"
+          },
+          "messageId": "<CAAbTxnHbuTz-=UZB8nxsDf31NyUciJ2joitrBLJ4p--A+2Oj_w@mail.gmail.com>",
+          "html": false
+        },
+        "pairedItem": {
+          "item": 3
+        }
+      },
+      {
+        "json": {
+          "id": "1a0e44ab740a7fb7",
+          "threadId": "1a0e44ab740a7fb7",
+          "labelIds": [
+            "IMPORTANT",
+            "CATEGORY_PERSONAL",
+            "INBOX"
+          ],
+          "sizeEstimate": 7087,
+          "headers": {
+            "delivered-to": "Delivered-To: saleem290803@gmail.com",
+            "received": "Received: from 498586711441 named unknown by gmailapi.google.com with\r\n HTTPREST; Sun, 27 Sep 2026 12:14:55 -0700",
+            "x-received": "X-Received: by 2002:a05:7300:de0b:b0:341:f4d6:d9a5 with SMTP id\r\n 5a478bee46e88-3427169be76mr11245483eec.1.1790536496350; Sun, 27 Sep 2026\r\n 12:14:56 -0700 (PDT)",
+            "arc-seal": "ARC-Seal: i=1; a=rsa-sha256; t=1790536496; cv=none;\r\n        d=google.com; s=arc-20260327;\r\n        b=XlaruOT4v5WZ87vtecZTyTvQ5m50YziASp5jNwlQ6ok/nrkkOxDPjuF+Ktl/hbFCr7\r\n         61DkZ1GfLZby1hhX3GPQcessqabinVfpLD/ZFcBg/OZDtgq3JTcK1QHJ8fHCG84KVOEM\r\n         dkgGoD/A/ChEgSx2OLoxbzlOH4UYCIBLCcYnFGO8PfW8FhrvyEQI3kG23FXmVqAgAQkw\r\n         FhAJcPWypBXM+vYZuDr6r752+oG4JfOpQea/LoQQ6V30tqL/GAjlEDPANjANG39d2RrQ\r\n         F5TcxfulJmsJYogZnL3UzJfpnX74q+dAjgC5kocfmYIL3ITZ709E3cjn1eIYv8lQ75ee\r\n         1w7A==",
+            "arc-message-signature": "ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;\r\n        h=to:subject:message-id:date:from:mime-version:dkim-signature;\r\n        bh=4xxY5Gye5CfKQ/QQc/vtGaPpoKqlYWlZDe0nhvObEOo=;\r\n        fh=lGUtuOQ5bX9Rp/yrS32Aw5m0hmRf5iwwPKyQO0HVTqg=;\r\n        b=nBOv7wgxoAYgms2lx0QSsiVtye9bSl8wkBlwmf+5gfeoyASwHhfRdp0QnxM4luT1m6\r\n         NH9eGZPyGXL8KmKlr9ErMH1ufT9oDOkTrxkrGK21wMGe5Yv1htXeFGXnpkQ/JJwhmAhm\r\n         5QURkLqA02deM6w6IXpdUR81yaPB9NT5w64fFi/2qmMy9lG8+z8see8hPftVP7lc5HvH\r\n         17SKlxN8CC9W9Rkzn4AY8vfJsa1ypTwf+6pvPJheRomtLFNzmIXWcoZlqRKtTWpXwzT1\r\n         QCkpC3DBDVkb7WR9iHwj6NCpk6pGYmleA7jWTw0zT11bMulqN/ybUGrcTraNT6oiTSF2\r\n         ftKQ==;\r\n        dara=google.com",
+            "arc-authentication-results": "ARC-Authentication-Results: i=1; mx.google.com; arc=none",
+            "return-path": "Return-Path: <unofficial.ms1@gmail.com>",
+            "received-spf": "Received-SPF: pass (google.com: domain of unofficial.ms1@gmail.com designates 209.85.220.65 as permitted sender) client-ip=209.85.220.65;",
+            "authentication-results": "Authentication-Results: mx.google.com;\r\n       dkim=pass header.i=@gmail.com header.s=20251104 header.b=jMKoi8kR;\r\n       arc=pass (i=1);\r\n       spf=pass (google.com: domain of unofficial.ms1@gmail.com designates 209.85.220.65 as permitted sender) smtp.mailfrom=unofficial.ms1@gmail.com;\r\n       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;\r\n       dara=pass header.i=@gmail.com",
+            "dkim-signature": "DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n        d=gmail.com; s=20251104; t=1790536496; x=1791141296; dara=google.com;\r\n        h=content-type:to:subject:message-id:date:from:mime-version:from:to\r\n         :cc:subject:date:message-id:reply-to:content-type;\r\n        bh=4xxY5Gye5CfKQ/QQc/vtGaPpoKqlYWlZDe0nhvObEOo=;\r\n        b=jMKoi8kRGJDzJTqAJf9jDO06p/wt4yPFfmD7r8QmLv0ViT+k8Vquj9XaRXDpXmw2Qo\r\n         gxu3VavxKrq7JL3w+INv+q6rm5swsHFDgOyKXjfx6c4h/Yj9ff9qXioc4swlFADNguU9\r\n         aMoaamf6YPgM3FN1+hZCkapQgRNJ+wReORsB7tFGRooTDJrSJdxzZPAQU5U/IkHBNM6y\r\n         BiUSZ3CAQgC+XwofzgDQ60pXQF+7cgTWZBYfyf1pfPqGHVxFOzoG8V8MR0go+i6rAnui\r\n         fjGPvBo36TVWeyCSDnc3dGfOc3sllm9yCcfHuk4uAxrO9/9/RZKVdLf8fS+5WAKHh1Bn\r\n         3a/g==",
+            "x-google-dkim-signature": "X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n        d=1e100.net; s=20260707; t=1790536496; x=1791141296;\r\n        h=content-type:to:subject:message-id:date:from:mime-version:x-gm-gg\r\n         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to\r\n         :content-type;\r\n        bh=4xxY5Gye5CfKQ/QQc/vtGaPpoKqlYWlZDe0nhvObEOo=;\r\n        b=Ny7nMDzviwcDXZdiwtPfZmr90FGRl6H1N3+p9jVu9ERGgnF0Owb3Ldh0mpv0qgyfbk\r\n         PE6W6/j88tTdpdON6mkhXHTq2sajlo2fLDakxTvcpJLXWaZcgv3SS+cVl03m51uxlZ4K\r\n         3D+chyrggu0pYBkAfynyP6SlD5Ovq9CLmdb83QeuXbMlYBiEdQG8wAN58tWrwQRuDxb1\r\n         m2v5V1wJZEe3K/J9Sv/5AHhMPNEGyTHYmTCN5fbUWRp7D/OR+1+e3XifZ5rRLHQzyNvR\r\n         FtK1Bfqs/HK3HBdIIxgrQ4pyMH7hSgekgyWFPvhnB3CAh+KTppvtkZRVTIYkwOVsDfOn\r\n         uo4Q==",
+            "x-gm-message-state": "X-Gm-Message-State: AFq9FYIbyxqdQfeiHp9JW84+LqBknWhhmzEzPHFT1a/iGIYkZMMPgGDM\r\n\t6+pQ0KYTVwH7SABiq5PPnQJ5228wVZqxq6ZhHwF9SjCLy5hu4yw3Dy9nOZKYWarhv3lBB53vzF6\r\n\tw5CgXJyLNL6HVSjzuFi02//B/glnEaV01u8KB",
+            "x-gm-gg": "X-Gm-Gg: AYBFou1DPRimKXF30/ghnMoqLPvsnTUMUUAhHlBrf7UkjU5L5/EyYa4JYvmTT+RydQ+\r\n\twdhSoN8uW/9FJcN9KD015V2M2jqzYpMmVsFKNy1XD6E8AjwgDbJUBM8x26O45b/7FM4FPRwOXSO\r\n\toH8gg2g5/gntrxaUBWEze6LpSSGjI04wa+KyoPCtSos0l+oHJqWFVWyl7CdJA/wTw1kWCHRwzil\r\n\tldiImgf4YSgwb0K7OE26VznlGxYWf7E9lvUx0Rbegvd0rFmMVP0+vZ3GAA4hrcdbAXBdZ5cbseA\r\n\tpnKxD5ToFEm9XbxtKE8rt7/4drgF1zpTWbo8jw2WgIaEj2OnNOBUdlo=",
+            "mime-version": "MIME-Version: 1.0",
+            "from": "From: Muhammad Saleem <unofficial.ms1@gmail.com>",
+            "date": "Date: Sun, 27 Sep 2026 12:14:55 -0700",
+            "x-gm-features": "X-Gm-Features: AclHuK_QY7TAaxzpeOZFi6AjOu88aQNAehFcB_5vx2p9hO_MiekveVdcj3jXN8E",
+            "message-id": "Message-ID: <CAAbTxnEjcDnNJOPSxJnwvTYiy+jm1+5BaVaWyE-jrcQeaKWGKg@mail.gmail.com>",
+            "subject": "Subject: [TASK6 TEST 05] Project deadline change",
+            "to": "To: saleem290803@gmail.com",
+            "content-type": "Content-Type: text/plain; charset=\"UTF-8\""
+          },
+          "text": "We need to move the delivery deadline to Friday and revise the project\nscope. Please review.\n",
+          "textAsHtml": "<p>We need to move the delivery deadline to Friday and revise the project<br/>scope. Please review.</p>",
+          "subject": "[TASK6 TEST 05] Project deadline change",
+          "date": "2026-09-27T19:14:55.000Z",
+          "to": {
+            "value": [
+              {
+                "address": "saleem290803@gmail.com",
+                "name": ""
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><a href=\"mailto:saleem290803@gmail.com\" class=\"mp_address_email\">saleem290803@gmail.com</a></span>",
+            "text": "saleem290803@gmail.com"
+          },
+          "from": {
+            "value": [
+              {
+                "address": "unofficial.ms1@gmail.com",
+                "name": "Muhammad Saleem"
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><span class=\"mp_address_name\">Muhammad Saleem</span> &lt;<a href=\"mailto:unofficial.ms1@gmail.com\" class=\"mp_address_email\">unofficial.ms1@gmail.com</a>&gt;</span>",
+            "text": "\"Muhammad Saleem\" <unofficial.ms1@gmail.com>"
+          },
+          "messageId": "<CAAbTxnEjcDnNJOPSxJnwvTYiy+jm1+5BaVaWyE-jrcQeaKWGKg@mail.gmail.com>",
+          "html": false
+        },
+        "pairedItem": {
+          "item": 4
+        }
+      },
+      {
+        "json": {
+          "id": "1a0e44a9dc4ae8e7",
+          "threadId": "1a0e44a9dc4ae8e7",
+          "labelIds": [
+            "IMPORTANT",
+            "CATEGORY_PERSONAL",
+            "INBOX"
+          ],
+          "sizeEstimate": 7079,
+          "headers": {
+            "delivered-to": "Delivered-To: saleem290803@gmail.com",
+            "received": "Received: from 498586711441 named unknown by gmailapi.google.com with\r\n HTTPREST; Sun, 27 Sep 2026 14:14:48 -0500",
+            "x-received": "X-Received: by 2002:a05:7301:1f15:b0:33e:6714:3945 with SMTP id\r\n 5a478bee46e88-34271c88f71mr15177930eec.2.1790536489352; Sun, 27 Sep 2026\r\n 12:14:49 -0700 (PDT)",
+            "arc-seal": "ARC-Seal: i=1; a=rsa-sha256; t=1790536489; cv=none;\r\n        d=google.com; s=arc-20260327;\r\n        b=JlKKLCkaF1Ui6e2+/lCnBL4ai1I+INfrAKtF2DiPvFsnY9Kkw9ZAdF5yegcBcR4olP\r\n         NZPgBcjsI8pI0zx/saBdz/1rHdzbEaJElsqMyc8Iu0o5ieU3oYpU7wvlo6Ek5/daVF6g\r\n         ad5rPm+hYjOv7vyjCdpp91e9uDzSmMoqguxe3nR5AE2n12XOKZSBiQqg51P+UK6EfLqS\r\n         H2wNUwRqzqBbIPz9RLmkp8AJJT1Np2HvW1ViF0azR5GmqrakztX0Phu9/As2RrH/9Wbe\r\n         Y37kkDAlA7I/5BtgXUP5jiqZ+CCEGb9U2DyAUfz8rmq7zLB9pZnvGSATQPpHRkputEc3\r\n         2J8Q==",
+            "arc-message-signature": "ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;\r\n        h=to:subject:message-id:date:from:mime-version:dkim-signature;\r\n        bh=xDfGvEZTRkMI/y2xfrPOxTk0MoPCENnYo3HQQ7pdwV4=;\r\n        fh=lGUtuOQ5bX9Rp/yrS32Aw5m0hmRf5iwwPKyQO0HVTqg=;\r\n        b=l3+5OAhpbqagyisugNzk6y6kJZsnR3kBfwRi/Lx781Wisp800AUAMNKaLeKxwttkos\r\n         r9ZvYCznlqd5h8Q0DryckJoOFQCxmG7RiccpKUHWkzv3NvCHC880uTvzU3nAX0EP7bw/\r\n         BkLCHV6f6IdwqhKkvJW3Lr7N/cUg9Qb/uIKSmDQ7DvRiKHpWEHeQaVCKW2tsy2Nqe3Iv\r\n         SJE5XAqx9xyssBIEnnwShlSlyAq5ZmrQ67gBCgi5GKkFf7FB6kHNz2sxjCNUOIm45I/5\r\n         je55eQC2eKgbit933QfBAELe6hbhH08yoPkSXQt2GINMUwP7Dfz9iVlL8iQYf4jnihUi\r\n         XVAw==;\r\n        dara=google.com",
+            "arc-authentication-results": "ARC-Authentication-Results: i=1; mx.google.com; arc=none",
+            "return-path": "Return-Path: <unofficial.ms1@gmail.com>",
+            "received-spf": "Received-SPF: pass (google.com: domain of unofficial.ms1@gmail.com designates 209.85.220.65 as permitted sender) client-ip=209.85.220.65;",
+            "authentication-results": "Authentication-Results: mx.google.com;\r\n       dkim=pass header.i=@gmail.com header.s=20251104 header.b=\"fD9V/hmX\";\r\n       arc=pass (i=1);\r\n       spf=pass (google.com: domain of unofficial.ms1@gmail.com designates 209.85.220.65 as permitted sender) smtp.mailfrom=unofficial.ms1@gmail.com;\r\n       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;\r\n       dara=pass header.i=@gmail.com",
+            "dkim-signature": "DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n        d=gmail.com; s=20251104; t=1790536489; x=1791141289; dara=google.com;\r\n        h=content-type:to:subject:message-id:date:from:mime-version:from:to\r\n         :cc:subject:date:message-id:reply-to:content-type;\r\n        bh=xDfGvEZTRkMI/y2xfrPOxTk0MoPCENnYo3HQQ7pdwV4=;\r\n        b=fD9V/hmXAQc9j9wdQJtyd86iGRKTUstxWEFAagjmUBFjBXcAVJreYOhLDCh+OVUCUx\r\n         gOboNDdYU+bdNmmqeamTcc7+n21C3wtoW3a2RUKPcA6tZQK5NHic+x1n984tV/xLqAsO\r\n         xzcnV8kDdzkKAlO8C92H7nNZBIPwownpGNpMArqtmYN1S19d++meStokeQd6jDtzksE+\r\n         GkwI0a5DLIH5la91j6s8iRTzI3ORdFxd1Tj/xr+D7liKLyJRJHPftG4HDQ4dnmzSckyb\r\n         4l4AyKDKrzYaqkvvnNs/3JUlgKFabZWazBVsfE3GBV6jsiJEOQDZ1wJJZtR22LLV9j6p\r\n         KobQ==",
+            "x-google-dkim-signature": "X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;\r\n        d=1e100.net; s=20260707; t=1790536489; x=1791141289;\r\n        h=content-type:to:subject:message-id:date:from:mime-version:x-gm-gg\r\n         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to\r\n         :content-type;\r\n        bh=xDfGvEZTRkMI/y2xfrPOxTk0MoPCENnYo3HQQ7pdwV4=;\r\n        b=2ftTHvlefcMNek0ED3OyHSaOt1FvwAo15EhN8NgGhlC/7JTe6g57966nVYY9tJJR80\r\n         Hs212a6D43pcJ0MtyOWlSA1L0Jw9yydoMTrnUkBvDQh8WLKmeLRecJFqbvdtY0vorN4L\r\n         T5o5DjNUP4R4eZC707dBSVq4dwVkRGHW+YXgC0JluukdDtXyUGL1RSg3Iq8MIBFccdFb\r\n         dmHmnbho3Q/GqI2vcqPFMJgeVrKKd1uwoQYP7nylKEni1QZBO+CVUxUJSz9zSR991DjL\r\n         u8xmWZEtRkZzzmtR+ZxOiHa8DzBWYMarUqsfji3me9/jZd23UTeyB5g6UqT7NpAsC622\r\n         7eVw==",
+            "x-gm-message-state": "X-Gm-Message-State: AFuF++ke1zkii2pDlHEjeLbAXdMSrsecNH3n94Sk8jBOIixUx9kBpcC7\r\n\tYNQSpmCm/kRyAY7G1D5wfXpxje6XVoVtrHbO3WQFN9FD4j7qpWZzKPBRyMzzZegFY3fiMLiRp/r\r\n\tlp9i/EdtG+lCg3By9FksmQxO7Fduk60Mxndj+",
+            "x-gm-gg": "X-Gm-Gg: AYBFou2aiLTpNJRxaq1HruyaApfzcrW4T6CobBEbpbkT5pePJDnwoTrgiLHOKy7C79y\r\n\t4090NcNOMoy4udIPba4FEf2F+/pBHUVNB+2s3DvQ9rcyISZkBCdRgS+u8isJ2A79GlRy/1daCbZ\r\n\t1bOF3Db2x+sdq0ftcULkXanuTES8vZdA5mm/uEiFoWEVuKbtLHdxo6iVBJW+nJuRP35sAWD3yjs\r\n\t2rERHxCzD4ndtLfnIyn7ChMSY0ISRBAEMDNve9S2JtSUrE41wu76FlJxSMGPta6otcc7WYeRili\r\n\t8ICcnLfr6Koc+ApTxPMM9WUkuFWNgLV/FsEkgL0Pz1/ldJCguPJ2Wde3hfa3kSz3hiU=",
+            "mime-version": "MIME-Version: 1.0",
+            "from": "From: Muhammad Saleem <unofficial.ms1@gmail.com>",
+            "date": "Date: Sun, 27 Sep 2026 14:14:48 -0500",
+            "x-gm-features": "X-Gm-Features: AclHuK-o-lk_wwcVfFmrjzhxatWtAiQuq1G2uYaevia_xmhK04sbt3KTG2tqXCk",
+            "message-id": "Message-ID: <CAAbTxnG6DAxJuZ21Fq40JWpTj1mntJVx0dw6Euk6tQdX13C3GQ@mail.gmail.com>",
+            "subject": "Subject: [TASK6 TEST 03] London accommodation",
+            "to": "To: saleem290803@gmail.com",
+            "content-type": "Content-Type: text/plain; charset=\"UTF-8\""
+          },
+          "text": "What properties do you have in London and what are their monthly rents?\n",
+          "textAsHtml": "<p>What properties do you have in London and what are their monthly rents?</p>",
+          "subject": "[TASK6 TEST 03] London accommodation",
+          "date": "2026-09-27T19:14:48.000Z",
+          "to": {
+            "value": [
+              {
+                "address": "saleem290803@gmail.com",
+                "name": ""
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><a href=\"mailto:saleem290803@gmail.com\" class=\"mp_address_email\">saleem290803@gmail.com</a></span>",
+            "text": "saleem290803@gmail.com"
+          },
+          "from": {
+            "value": [
+              {
+                "address": "unofficial.ms1@gmail.com",
+                "name": "Muhammad Saleem"
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><span class=\"mp_address_name\">Muhammad Saleem</span> &lt;<a href=\"mailto:unofficial.ms1@gmail.com\" class=\"mp_address_email\">unofficial.ms1@gmail.com</a>&gt;</span>",
+            "text": "\"Muhammad Saleem\" <unofficial.ms1@gmail.com>"
+          },
+          "messageId": "<CAAbTxnG6DAxJuZ21Fq40JWpTj1mntJVx0dw6Euk6tQdX13C3GQ@mail.gmail.com>",
+          "html": false
+        },
+        "pairedItem": {
+          "item": 5
+        }
+      }
+    ]
+  },
   "connections": {
     "When clicking ‘Execute workflow’": {
       "main": [
@@ -875,7 +1566,7 @@
         ],
         [
           {
-            "node": "Forward HR",
+            "node": "Prepare HR Forward",
             "type": "main",
             "index": 0
           }
@@ -990,17 +1681,6 @@
         ]
       ]
     },
-    "Normalize Email": {
-      "main": [
-        [
-          {
-            "node": "Clean Email Body",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Clean Email Body": {
       "main": [
         [
@@ -1040,15 +1720,187 @@
           }
         ]
       ]
+    },
+    "Prepare HR Forward": {
+      "main": [
+        [
+          {
+            "node": "Forward HR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Email": {
+      "main": [
+        [
+          {
+            "node": "Find Existing Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Existing Message": {
+      "main": [
+        [
+          {
+            "node": "Already Processed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Already Processed?": {
+      "main": [
+        [
+          {
+            "node": "STOP",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Restore Email Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restore Email Data": {
+      "main": [
+        [
+          {
+            "node": "Clean Email Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark as Spam": {
+      "main": [
+        [
+          {
+            "node": "Mark a message as read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Archive Email": {
+      "main": [
+        [
+          {
+            "node": "Mark a message as read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Urgent Alert - Manager": {
+      "main": [
+        [
+          {
+            "node": "Mark a message as read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discord - Manager Alert1": {
+      "main": [
+        [
+          {
+            "node": "Mark a message as read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discord - Manager Alert": {
+      "main": [
+        [
+          {
+            "node": "Mark a message as read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply - RAG Answer": {
+      "main": [
+        [
+          {
+            "node": "Mark a message as read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discord - Human Review": {
+      "main": [
+        [
+          {
+            "node": "Mark a message as read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discord - HR Alert": {
+      "main": [
+        [
+          {
+            "node": "Mark a message as read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discord - Manager Alert2": {
+      "main": [
+        [
+          {
+            "node": "Mark a message as read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark a message as read": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "62b5577d-2bfa-4d49-b4db-607db49e9283",
+  "versionId": "54e911d4-cc62-4c6e-a4d3-5aed21dc93e9",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "efc765f336945861d7ca4d91ae24045e93efb6674bd411177e42169d2b09d2ea"
